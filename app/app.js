@@ -2,6 +2,7 @@ var express = require('express');
     require('express-namespace');
 var http = require('http');
 var path = require('path');
+var passport = require('passport');
 
 var app = express();
 var publicPath = path.join(__dirname, '..', 'public');
@@ -15,6 +16,8 @@ app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(express.cookieParser('I can haz BLEND demo!'));
 app.use(express.session());
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.static(publicPath));
 
 // Shared locals for all views

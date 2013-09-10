@@ -10,7 +10,6 @@ Trucs à installer
 Étapes de dev
 =============
 
-  3. Authentification auto pour le back (username:password)
   5. Module gestion des quiz
       0. Layout de base pour le back
       1. Listing et bouton de création

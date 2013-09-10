@@ -2,3 +2,4 @@ node_modules
 npm-debug.log
 public
 zz_may_need
+credentials.json
