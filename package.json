@@ -1,0 +1,60 @@
+{
+  "name": "blend-demo",
+  "version": "0.0.1",
+  "description": "A wide-range demo of Node.js capabilities for the 2013 BLEND conference in Lyon",
+  "private": true,
+  "dependencies": {
+    "async": "~0.2.9",
+    "colors": "~0.6.2",
+    "express": "~3.4.0",
+    "jade": "~0.35.0",
+    "marked-man": "0.0.2",
+    "mkdirp": "~0.3.5",
+    "optimist": "~0.6.0",
+    "redis": "~0.8.4",
+    "request": "~2.27.0",
+    "socket.io": "~0.9.16",
+    "underscore": "~1.5.2",
+    "coffee-script": "~1.6.3",
+    "mocha": "~1.12.1",
+    "passport-twitter": "~1.0.1",
+    "css-brunch": "~1.6.0",
+    "javascript-brunch": "~1.6.0",
+    "uglify-js-brunch": "~1.7.2",
+    "jade-brunch": "~1.7.2",
+    "stylus-brunch": "~1.7.0",
+    "clean-css-brunch": "~1.6.0",
+    "passport": "~0.1.17",
+    "passport-http": "~0.2.2",
+    "sqlite3": "~2.1.15",
+    "hiredis": "~0.1.15",
+    "express-namespace": "~0.1.1"
+  },
+  "devDependencies": {
+    "coffee-script": "~1.6.3",
+    "mocha": "~1.12.1"
+  },
+  "readmeFilename": "README.md",
+  "scripts": {
+    "start": "nodemon app/app.js",
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:tdd/blend-demo.git"
+  },
+  "keywords": [
+    "demo",
+    "blend",
+    "conference",
+    "tests",
+    "webapp",
+    "websockets",
+    "redis"
+  ],
+  "author": "Christophe Porteneuve",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tdd/blend-demo/issues"
+  }
+}
