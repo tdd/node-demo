@@ -11,8 +11,7 @@ Trucs à installer
 =============
 
   >>> 5. Module gestion des quiz
-      >>> 1. Listing et bouton de création
-      2. Fiche de création/modification (partial cœur) : titre, tags, niveau de difficulté, mode de déroulé (aléatoire ou spécifique), etc.
+      >>> 2. Fiche de création/modification (partial cœur) : titre, tags, niveau de difficulté, mode de déroulé (aléatoire ou spécifique), etc.
       3. Listing : édition et suppression (include? mixin?)
       4. Fiche quizz en mode modif
       -- fin étape --

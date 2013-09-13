@@ -1,0 +1,14 @@
+mixin icon(kind)
+  i.glyphicon(class="glyphicon-#{kind}")
+
+mixin running_mode(quiz)
+  if 'random' === quiz.runningMode
+    +icon('random')
+    |  Aléatoire
+  else
+    +icon('sort-by-order')
+    |  Séquentiel
+
+mixin starred_level(quiz)
+  - for (var i = 0; i < quiz.level; ++i)
+    +icon('star')

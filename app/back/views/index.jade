@@ -1,3 +1,41 @@
 extends layout
+include ../../mixins
+include mixins
+
 block content
-  p JADE TEMPLATE FOR HOME INDEX: COMING SOON!
+  p
+    a.btn.btn-lg.btn-primary(href="quizzes/new")
+      +icon('plus')
+      &nbsp;
+      | Créer un quiz
+
+  if quizzes.length
+    table.table.table-striped
+      thead
+        tr
+          th Quiz
+          th Difficulté
+          th Ordre
+          th Questions
+          th
+      tbody
+        each quiz in quizzes
+          tr
+            td
+              a(href="quizzes/#{quiz.id}/edit")
+                +icon('pencil')
+                &nbsp;
+                = quiz.title
+              if quiz.description
+                br
+                small.text-muted= quiz.description
+            td
+              +starred_level(quiz)
+            td
+              +running_mode(quiz)
+            td TODO
+            td
+              a.btn.btn-danger.btn-xs(href="quizzes/#{quiz.id}", data-action="delete")
+                +icon('trash')
+                &nbsp;
+                | Supprimer
