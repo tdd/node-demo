@@ -22,6 +22,7 @@
     "javascript-brunch": "~1.6.0",
     "uglify-js-brunch": "~1.7.2",
     "jade-brunch": "~1.7.2",
+    "less-brunch": "~1.7.0",
     "stylus-brunch": "~1.7.0",
     "clean-css-brunch": "~1.6.0",
     "passport": "~0.1.17",
