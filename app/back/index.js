@@ -7,6 +7,7 @@ var passport = require('passport');
 var path = require('path');
 var BasicStrategy = require('passport-http').BasicStrategy;
 var Quiz = require('../models/quiz');
+var _ = require('underscore');
 
 module.exports = backOfficeApp;
 
@@ -38,8 +39,15 @@ function backOfficeApp(app) {
 
 // Action: create quiz
 function createQuiz(req, res) {
-  // req.params.quiz (obj)
-  res.send(201, 'Created coming soon!');
+  var quiz = Quiz.build(req.body.quiz);
+  quiz.save().success(function() {
+    req.flash('success', 'Le quiz « ' + quiz.title + ' » a bien été créé.');
+    // TODO: redir to edit, actually
+    res.redirect('/admin');
+  }).error(function() {
+    quiz.errors = _.extend.apply(_, arguments);
+    res.render('new', { quiz: quiz, title: 'Nouveau quiz' });
+  });
 }
 
 // Action: delete quiz
@@ -63,7 +71,8 @@ function listQuizzes(req, res) {
 
 // Action: new quiz
 function newQuiz(req, res) {
-  res.send("COMING SOON");
+  var quiz = Quiz.build();
+  res.render('new', { quiz: quiz, title: 'Nouveau quiz' });
 }
 
 // Action: update quiz

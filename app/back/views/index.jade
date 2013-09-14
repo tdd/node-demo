@@ -4,7 +4,7 @@ include mixins
 
 block content
   p
-    a.btn.btn-lg.btn-primary(href="quizzes/new")
+    a.btn.btn-lg.btn-primary(href="/admin/quizzes/new")
       +icon('plus')
       &nbsp;
       | Créer un quiz
@@ -22,7 +22,7 @@ block content
         each quiz in quizzes
           tr
             td
-              a(href="quizzes/#{quiz.id}/edit")
+              a(href="/admin/quizzes/#{quiz.id}/edit")
                 +icon('pencil')
                 &nbsp;
                 = quiz.title
@@ -35,7 +35,7 @@ block content
               +running_mode(quiz)
             td TODO
             td
-              a.btn.btn-danger.btn-xs(href="quizzes/#{quiz.id}", data-action="delete")
+              a.btn.btn-danger.btn-xs(href="/admin/quizzes/#{quiz.id}", data-action="delete")
                 +icon('trash')
                 &nbsp;
                 | Supprimer
