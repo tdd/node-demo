@@ -1,0 +1,8 @@
+if breadcrumbs
+  ol.breadcrumb
+    each crumb in breadcrumbs
+      if crumb.url
+        li
+          a(href=crumb.url)= crumb.label
+      else
+        li.active= crumb.label

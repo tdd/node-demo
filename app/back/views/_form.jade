@@ -1,0 +1,26 @@
+- Quiz = quiz.daoFactory
+- quiz.errors = quiz.errors || {}
+.form-group(class=(quiz.errors.title ? 'has-error' : null))
+  label(for="title") Titre
+  input#title.form-control(type="text", name="quiz[title]", value=quiz.title)
+  if quiz.errors.title
+    .help-block= quiz.errors.title.join(', ')
+.form-group
+  label(for="description") Description
+  textarea#description.form-control(name="quiz[description]")= quiz.description
+.form-group
+  label(for="level") Difficulté
+  select#level.form-control(name="quiz[level]")
+    - range = Quiz.rawAttributes.level.validate
+    - for (var i = range.min; i <= range.max; ++i)
+      option(value=i, selected=(quiz.level === i))= i
+.form-group
+  label(for="runningMode") Ordre
+  select#runningMode.form-control(name="quiz[runningMode]")
+    each value in Quiz.rawAttributes.runningMode.validate.isIn[0]
+      option(value=value, selected=(value === quiz.runningMode))
+        +running_mode_label(value)
+.checkbox
+  label
+    input(type="checkbox", name="quiz[visible]", checked=quiz.visible)
+    | Visible

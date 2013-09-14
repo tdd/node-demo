@@ -22,6 +22,8 @@ block content
         each quiz in quizzes
           tr
             td
+              +icon(quiz.visible ? 'eye-open' : 'eye-close', 'text-muted')
+              &nbsp;
               a(href="/admin/quizzes/#{quiz.id}/edit")
                 +icon('pencil')
                 &nbsp;
@@ -35,7 +37,9 @@ block content
               +running_mode(quiz)
             td TODO
             td
-              a.btn.btn-danger.btn-xs(href="/admin/quizzes/#{quiz.id}", data-action="delete")
-                +icon('trash')
-                &nbsp;
-                | Supprimer
+              form(method="post", action="/admin/quizzes/#{quiz.id}")
+                input(type="hidden", name="_method", value="delete")
+                button.btn.btn-danger.btn-xs(type="submit")
+                  +icon('trash')
+                  &nbsp;
+                  | Supprimer

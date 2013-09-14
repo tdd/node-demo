@@ -1,0 +1,9 @@
+extends layout
+include ../../mixins
+include mixins
+
+block content
+  form(method="post", action="/admin/quizzes/#{quiz.id}")
+    input(type="hidden", name="_method", value="put")
+    include _form
+    button.btn.btn-primary.btn-lg(type="submit") Modifier le quiz

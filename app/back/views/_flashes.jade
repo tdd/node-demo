@@ -1,4 +1,5 @@
 each messages, kind in flash
+  - if ('error' === kind) kind = 'danger'
   .alert(class="alert-#{kind}")
     each message in messages
       p= message

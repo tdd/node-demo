@@ -23,14 +23,32 @@ function backOfficeApp(app) {
     app.set('views', path.join(__dirname, 'views'));
     next();
   });
+
+  // Subapp model checking
+  app.use('/admin/quizzes', function checkQuizModal(req, res, next) {
+    var quizId = (req.url.match(/^\/(\d+)\b/) || [])[1];
+    if (undefined === quizId)
+      return next();
+
+    Quiz.find(quizId).success(function(quiz) {
+      if (quiz) {
+        req.quiz = quiz;
+        next();
+      } else {
+        req.flash('error', 'Ce quiz est introuvable.');
+        res.redirect('/admin');
+      }
+    });
+  });
+
   // Namespaced routes (REST resource routes, basically)
   app.namespace('/admin', function() {
-    app.get( '/',             listQuizzes);
-    app.get( '/quizzes/new',  newQuiz);
-    app.post('/quizzes',      createQuiz);
-    app.get( '/quizz/:id',    editQuiz);
-    app.put( '/quizz/:id',    updateQuiz);
-    app.del( '/quizz/:id',    deleteQuiz);
+    app.get( '/',                 listQuizzes);
+    app.get( '/quizzes/new',      newQuiz);
+    app.post('/quizzes',          createQuiz);
+    app.get( '/quizzes/:id/edit', editQuiz);
+    app.put( '/quizzes/:id',      updateQuiz);
+    app.del( '/quizzes/:id',      deleteQuiz);
   });
 }
 
@@ -40,26 +58,28 @@ function backOfficeApp(app) {
 // Action: create quiz
 function createQuiz(req, res) {
   var quiz = Quiz.build(req.body.quiz);
-  quiz.save().success(function() {
-    req.flash('success', 'Le quiz « ' + quiz.title + ' » a bien été créé.');
-    // TODO: redir to edit, actually
-    res.redirect('/admin');
-  }).error(function() {
-    quiz.errors = _.extend.apply(_, arguments);
-    res.render('new', { quiz: quiz, title: 'Nouveau quiz' });
-  });
+  quiz.save()
+    .success(function() {
+      req.flash('success', 'Le quiz « ' + quiz.title + ' » a bien été créé.');
+      res.redirect('/admin/quizzes/' + quiz.id + '/edit');
+    })
+    .error(function() {
+      quiz.errors = _.extend.apply(_, arguments);
+      res.render('new', { quiz: quiz, title: 'Nouveau quiz' });
+    });
 }
 
 // Action: delete quiz
 function deleteQuiz(req, res) {
-  // req.params.id
-  res.send(204, "Deletion coming soon!");
+  req.quiz.destroy().success(function() {
+    req.flash('success', "Le quiz « " + req.quiz.title + " » a bien été supprimé.");
+    res.redirect('/admin');
+  });
 }
 
 // Action: edit quiz
 function editQuiz(req, res) {
-  // req.params.id
-  res.send("COMING SOON");
+  res.render('edit', { quiz: req.quiz, breadcrumbs: buildBreadcrumbs(req.quiz) });
 }
 
 // Action: quizz listing
@@ -77,8 +97,23 @@ function newQuiz(req, res) {
 
 // Action: update quiz
 function updateQuiz(req, res) {
-  // req.params.id
-  res.redirect(req.url);
+  var quiz = req.quiz;
+  quiz.updateAttributes(req.body.quiz)
+  .success(function() {
+    req.flash('success', 'Le quiz « ' + quiz.title + ' » a bien été mis à jour.');
+    res.redirect("/admin/quizzes/" + quiz.id + "/edit");
+  })
+  .error(function() {
+    quiz.errors = _.extend.apply(_, arguments);
+    res.render('edit', { quiz: quiz, breadcrumbs: buildBreadcrumbs(quiz) });
+  });
+}
+
+function buildBreadcrumbs(quiz) {
+  return [
+    { url: '/admin', label: 'Quizzes' },
+    { label: quiz.title }
+  ];
 }
 
 // Backoffice authentication setup
