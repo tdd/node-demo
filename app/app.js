@@ -11,7 +11,6 @@ var publicPath = path.join(__dirname, '..', 'public');
 // all environments
 app.set('port', process.env.PORT || 3000);
 app.set('view engine', 'jade');
-app.use(express.favicon());
 app.use(express.logger(app.get('env') === 'development' ? 'dev' : 'default'));
 app.use(express.json());
 app.use(express.urlencoded());
