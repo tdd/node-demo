@@ -22,5 +22,6 @@
         +running_mode_label(value)
 .checkbox
   label
-    input(type="checkbox", name="quiz[visible]", checked=quiz.visible)
+    input(type="hidden", name="quiz[visible]", value=0)
+    input(type="checkbox", name="quiz[visible]", checked=quiz.visible, value=1)
     | Visible

@@ -10,3 +10,12 @@ mixin running_mode_label(mode)
 mixin starred_level(quiz)
   - for (var i = 0; i < quiz.level; ++i)
     +icon('star')
+
+mixin tab(id, label, defaultTab)
+  li(class=(query.tab === id || !query.tab && defaultTab ? 'active' : null))
+    a(href="##{id}", data-toggle="tab")= label
+
+
+mixin tab_pane(id, defaultTab)
+  .tab-pane(id=id, class=(query.tab === id || !query.tab && defaultTab ? 'active' : null))
+    block

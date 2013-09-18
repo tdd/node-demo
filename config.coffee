@@ -5,7 +5,7 @@ exports.config =
   files:
     javascripts:
       joinTo:
-        'app.js': /^app/
+        'back.js': /^app\/back\/client/
         'vendor.js': /^vendor/
       order:
         before: [

@@ -11,12 +11,6 @@ Trucs à installer
 =============
 
   >>> 5. Module gestion des quiz
-      -- fin étape --
-      5. Fiche quizz : onglet des questions, listing et ajout
-      6. Fiche de créa/modif de question (partial cœur) : titre, tags, texte des réponses (1 par ligne avec marqueur en tête si doit être cochée), durée accordée en secondes (défaut 15)
-      7. Listing questions : édition et suppression
-      8. Listing question : réordonnancement
-      -- fin étape --
       9. Listing : lancement d'un quiz comme quiz actif (si pas de quiz actif)
 
   6. Module de déroulement d'un quiz

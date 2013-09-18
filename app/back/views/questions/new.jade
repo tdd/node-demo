@@ -1,0 +1,7 @@
+extends ../layout
+include ../../../mixins
+
+block content
+  form(method="post", action="/admin/quizzes/#{quiz.id}/questions")
+    include _form
+    button.btn.btn-primary.btn-lg(type="submit") Ajouter la question

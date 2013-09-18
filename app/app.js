@@ -22,9 +22,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(publicPath));
 
-// Make the flash readable by all views
+// Make the flash and params readable by all views
 app.use(function(req, res, next) {
   app.locals.flash = req.flash();
+  app.locals.query = req.query;
   next();
 });
 

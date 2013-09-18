@@ -1,0 +1,46 @@
+include mixins
+- Question = question.daoFactory
+- question.errors = question.errors || {}
+.form-group(class=(question.errors.title ? 'has-error' : null))
+  label(for="title") Titre
+  input#title.form-control(type="text", name="question[title]", value=question.title)
+  if question.errors.title
+    .help-block= question.errors.title.join(', ')
+.form-group
+  label(for="duration") Temps autorisé
+  select#duration.form-control(name="question[duration]")
+    - range = Question.rawAttributes.duration.validate
+    - for (var i = range.min; i <= range.max; i += 5)
+      option(value=i, selected=(question.duration === i))
+        +format_duration(i)
+.checkbox
+  label
+    input(type="hidden", name="question[visible]", value=0)
+    input(type="checkbox", name="question[visible]", checked=question.visible, value=1)
+    | Visible
+
+fieldset
+  legend Réponses
+
+  table#answers.table.table-striped.sortable
+    thead
+      tr
+        th Correcte ?
+        th Texte
+        unless question.isNewRecord
+          th
+    tbody
+      each answer, i in answers
+        tr
+          td.col-xs-1
+            unless answer.isNewRecord
+              input(type="hidden", name="answers[#{i}][id]", value=answer.id)
+            input(type="hidden", name="answers[#{i}][correct]", value=0)
+            input(type="checkbox", name="answers[#{i}][correct]", checked=answer.correct, value=1)
+          td.col-xs-10
+            input.form-control(type="text", name="answers[#{i}][text]", value=answer.text)
+          unless question.isNewRecord
+            td
+              a.btn.btn-danger.btn-xs(href="#", data-action="remove")
+                +icon('trash')
+                |  Retirer

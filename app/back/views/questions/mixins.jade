@@ -1,0 +1,7 @@
+mixin format_duration(seconds)
+  if seconds < 60
+    | #{seconds} secondes
+  else if seconds % 60 === 0
+    | #{seconds / 60} minute#{seconds >= 120 ? 's' : ''}
+  else
+    | #{Math.floor(seconds / 60)}m #{seconds % 60}s

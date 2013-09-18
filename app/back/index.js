@@ -6,7 +6,10 @@ var fs = require('fs');
 var passport = require('passport');
 var path = require('path');
 var BasicStrategy = require('passport-http').BasicStrategy;
+var Sequelize = require('sequelize');
 var Quiz = require('../models/quiz');
+var Question = require('../models/question');
+var checkboxNormalizer = require('./checkbox_normalizer');
 var _ = require('underscore');
 
 module.exports = backOfficeApp;
@@ -15,6 +18,8 @@ module.exports = backOfficeApp;
 // ============
 
 function backOfficeApp(app) {
+  app.use('/admin', checkboxNormalizer);
+
   // Subapp authentication (using a previously registered HTTP Basic strategy)
   app.use('/admin', passport.authenticate('basic', { session: false }));
 
@@ -25,7 +30,7 @@ function backOfficeApp(app) {
   });
 
   // Subapp model checking
-  app.use('/admin/quizzes', function checkQuizModal(req, res, next) {
+  app.use('/admin/quizzes', function checkQuizModel(req, res, next) {
     var quizId = (req.url.match(/^\/(\d+)\b/) || [])[1];
     if (undefined === quizId)
       return next();
@@ -36,19 +41,23 @@ function backOfficeApp(app) {
         next();
       } else {
         req.flash('error', 'Ce quiz est introuvable.');
-        res.redirect('/admin');
+        res.redirect('/admin/quizzes');
       }
     });
   });
+  require('./questions')(app, 'middleware');
 
-  // Namespaced routes (REST resource routes, basically)
-  app.namespace('/admin', function() {
-    app.get( '/',                 listQuizzes);
-    app.get( '/quizzes/new',      newQuiz);
-    app.post('/quizzes',          createQuiz);
-    app.get( '/quizzes/:id/edit', editQuiz);
-    app.put( '/quizzes/:id',      updateQuiz);
-    app.del( '/quizzes/:id',      deleteQuiz);
+  // Namespaced routes (REST resource routes)
+  app.namespace('/admin/quizzes', function() {
+    app.get( '/',             listQuizzes);
+    app.get( '/new',          newQuiz);
+    app.post('/',             createQuiz);
+    app.get( '/:id/edit',     editQuiz);
+    app.put( '/:id',          updateQuiz);
+    app.put( '/:id/reorder',  reorderQuiz);
+    app.del( '/:id',          deleteQuiz);
+
+    require('./questions')(app, 'routes');
   });
 }
 
@@ -65,7 +74,7 @@ function createQuiz(req, res) {
     })
     .error(function() {
       quiz.errors = _.extend.apply(_, arguments);
-      res.render('new', { quiz: quiz, title: 'Nouveau quiz' });
+      res.render('new', { quiz: quiz, title: 'Nouveau quiz', breadcrumbs: buildBreadcrumbs() });
     });
 }
 
@@ -73,13 +82,20 @@ function createQuiz(req, res) {
 function deleteQuiz(req, res) {
   req.quiz.destroy().success(function() {
     req.flash('success', "Le quiz « " + req.quiz.title + " » a bien été supprimé.");
-    res.redirect('/admin');
+    res.redirect('/admin/quizzes');
   });
 }
 
 // Action: edit quiz
 function editQuiz(req, res) {
-  res.render('edit', { quiz: req.quiz, breadcrumbs: buildBreadcrumbs(req.quiz) });
+  req.quiz.getQuestions({ order: 'position' }).success(function(questions) {
+    res.render('edit', {
+      quiz: req.quiz,
+      questions: questions,
+      title: req.quiz.title,
+      breadcrumbs: buildBreadcrumbs(req.quiz)
+    });
+  });
 }
 
 // Action: quizz listing
@@ -92,7 +108,24 @@ function listQuizzes(req, res) {
 // Action: new quiz
 function newQuiz(req, res) {
   var quiz = Quiz.build();
-  res.render('new', { quiz: quiz, title: 'Nouveau quiz' });
+  res.render('new', { quiz: quiz, title: 'Nouveau quiz', breadcrumbs: buildBreadcrumbs() });
+}
+
+// Action: reorder quiz
+function reorderQuiz(req, res) {
+  var updateChain = new Sequelize.Utils.QueryChainer();
+  req.body.ids.forEach(function(id, index) {
+    updateChain.add(Question.QueryInterface.bulkUpdate(
+      Question.tableName,               // QueryInterface is shared and requires table names
+      { position: index + 1 },          // Attributes to change
+      { quizId: req.quiz.id, id: id }   // WHERE conditions. quizId added as a safeguard.
+    ));
+  });
+  updateChain.run().success(function() {
+    res.send(204, 'Order persisted.');
+  }).error(function(errors) {
+    res.json(500, errors);
+  });
 }
 
 // Action: update quiz
@@ -105,14 +138,18 @@ function updateQuiz(req, res) {
   })
   .error(function() {
     quiz.errors = _.extend.apply(_, arguments);
-    res.render('edit', { quiz: quiz, breadcrumbs: buildBreadcrumbs(quiz) });
+    res.render('edit', {
+      quiz: quiz,
+      title: quiz.title,
+      breadcrumbs: buildBreadcrumbs(quiz)
+    });
   });
 }
 
 function buildBreadcrumbs(quiz) {
   return [
-    { url: '/admin', label: 'Quizzes' },
-    { label: quiz.title }
+    { url: '/admin/quizzes', label: 'Quizzes' },
+    { label: quiz ? quiz.title : 'Nouveau quiz' }
   ];
 }
 

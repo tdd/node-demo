@@ -12,3 +12,7 @@ html(lang="fr")
       include _breadcrumbs
       include _flashes
       block content
+    script(src="/vendor.js")
+    script(src="/back.js")
+    script.
+      require('back/client/initialize');
