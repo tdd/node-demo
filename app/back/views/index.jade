@@ -35,7 +35,24 @@ block content
               +starred_level(quiz)
             td
               +running_mode(quiz)
-            td TODO
+            td
+              = counters[quiz.id] || 0
+              &nbsp;
+              if quiz.isCurrent()
+                if quiz.isStarted()
+                  span.text-muted Le quiz est en cours&hellip;
+                else
+                  form(method="post", action="/admin/quizzes/#{quiz.id}/start", style="display: inline")
+                    input(type="hidden", name="_method", value="put")
+                    button.btn.btn-success.btn-xs(type="submit")
+                      +icon('flash')
+                      |  Démarrer !
+              else if counters[quiz.id] > 0
+                form(method="post", action="/admin/quizzes/#{quiz.id}/init", style="display: inline")
+                  input(type="hidden", name="_method", value="put")
+                  button.btn.btn-success.btn-xs(type="submit")
+                    +icon('ok')
+                    |  Activer
             td
               form(method="post", action="/admin/quizzes/#{quiz.id}")
                 input(type="hidden", name="_method", value="delete")

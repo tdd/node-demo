@@ -10,9 +10,6 @@ Trucs à installer
 Étapes de dev
 =============
 
-  >>> 5. Module gestion des quiz
-      9. Listing : lancement d'un quiz comme quiz actif (si pas de quiz actif)
-
   6. Module de déroulement d'un quiz
       1. Lancement en cours : notif "quiz_init", reset complet des joueurs, etc.
       2. Page d'attente pour les joueurs, authentifiée Passport, etc.  Réaction à l'init et auto-join.  Notifié sur la page back d'init.

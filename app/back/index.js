@@ -10,6 +10,7 @@ var Sequelize = require('sequelize');
 var Quiz = require('../models/quiz');
 var Question = require('../models/question');
 var checkboxNormalizer = require('./checkbox_normalizer');
+var engine = require('../engine');
 var _ = require('underscore');
 
 module.exports = backOfficeApp;
@@ -55,6 +56,8 @@ function backOfficeApp(app) {
     app.get( '/:id/edit',     editQuiz);
     app.put( '/:id',          updateQuiz);
     app.put( '/:id/reorder',  reorderQuiz);
+    app.put( '/:id/init',     initQuiz);
+    app.put( '/:id/start',    startQuiz);
     app.del( '/:id',          deleteQuiz);
 
     require('./questions')(app, 'routes');
@@ -98,10 +101,27 @@ function editQuiz(req, res) {
   });
 }
 
+// Action: init quiz
+function initQuiz(req, res) {
+  engine.initQuiz(req.quiz).then(function() {
+    req.flash('success', "Le quiz « " + req.quiz.title + " » est désormais actif.");
+    res.redirect('/admin/quizzes');
+  });
+}
+
 // Action: quizz listing
 function listQuizzes(req, res) {
   Quiz.findAll().success(function(quizzes) {
-    res.render('index', { quizzes: quizzes });
+    Quiz.daoFactoryManager.sequelize.query(
+      'SELECT quizId AS id, COUNT(id) AS questions FROM questions GROUP BY 1',
+      null, { raw: true }
+    ).success(function(rows) {
+      counters = _.inject(rows, function(acc, row) {
+        acc[row.id] = row.questions;
+        return acc;
+      }, {});
+      res.render('index', { quizzes: quizzes, counters: counters });
+    });
   });
 }
 
@@ -125,6 +145,14 @@ function reorderQuiz(req, res) {
     res.send(204, 'Order persisted.');
   }).error(function(errors) {
     res.json(500, errors);
+  });
+}
+
+// Action: start quiz
+function startQuiz(req, res) {
+  engine.start().then(function() {
+    req.flash('success', "Le quiz « " + req.quiz.title + " » vient de démarrer.");
+    res.redirect('/admin/quizzes');
   });
 }
 

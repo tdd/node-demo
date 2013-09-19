@@ -39,6 +39,7 @@ app.configure('development', function() {
 
 // app modules
 require('./back')(app);
+require('./front')(app);
 app.use(app.router);
 
 http.createServer(app).listen(app.get('port'), function(){
