@@ -18,50 +18,54 @@ module.exports = backOfficeApp;
 // Subapp setup
 // ============
 
-function backOfficeApp(app) {
-  app.use('/admin', checkboxNormalizer);
+function backOfficeApp(app, mode) {
+  if ('routes' !== mode) {
+    app.use('/admin', checkboxNormalizer);
 
-  // Subapp authentication (using a previously registered HTTP Basic strategy)
-  app.use('/admin', passport.authenticate('basic', { session: false }));
+    // Subapp authentication (using a previously registered HTTP Basic strategy)
+    app.use('/admin', passport.authenticate('basic', { session: false }));
 
-  // Subapp-local views
-  app.use('/admin', function useLocalViews(req, res, next) {
-    app.set('views', path.join(__dirname, 'views'));
-    next();
-  });
-
-  // Subapp model checking
-  app.use('/admin/quizzes', function checkQuizModel(req, res, next) {
-    var quizId = (req.url.match(/^\/(\d+)\b/) || [])[1];
-    if (undefined === quizId)
-      return next();
-
-    Quiz.find(quizId).success(function(quiz) {
-      if (quiz) {
-        req.quiz = quiz;
-        next();
-      } else {
-        req.flash('error', 'Ce quiz est introuvable.');
-        res.redirect('/admin/quizzes');
-      }
+    // Subapp-local views
+    app.use('/admin', function useLocalViews(req, res, next) {
+      app.set('views', path.join(__dirname, 'views'));
+      next();
     });
-  });
-  require('./questions')(app, 'middleware');
 
-  // Namespaced routes (REST resource routes)
-  app.namespace('/admin/quizzes', function() {
-    app.get( '/',             listQuizzes);
-    app.get( '/new',          newQuiz);
-    app.post('/',             createQuiz);
-    app.get( '/:id/edit',     editQuiz);
-    app.put( '/:id',          updateQuiz);
-    app.put( '/:id/reorder',  reorderQuiz);
-    app.put( '/:id/init',     initQuiz);
-    app.put( '/:id/start',    startQuiz);
-    app.del( '/:id',          deleteQuiz);
+    // Subapp model checking
+    app.use('/admin/quizzes', function checkQuizModel(req, res, next) {
+      var quizId = (req.url.match(/^\/(\d+)\b/) || [])[1];
+      if (undefined === quizId)
+        return next();
 
-    require('./questions')(app, 'routes');
-  });
+      Quiz.find(quizId).success(function(quiz) {
+        if (quiz) {
+          req.quiz = quiz;
+          next();
+        } else {
+          req.flash('error', 'Ce quiz est introuvable.');
+          res.redirect('/admin/quizzes');
+        }
+      });
+    });
+    require('./questions')(app, 'middleware');
+  }
+
+  if ('middleware' !== mode) {
+    // Namespaced routes (REST resource routes)
+    app.namespace('/admin/quizzes', function() {
+      app.get( '/',             listQuizzes);
+      app.get( '/new',          newQuiz);
+      app.post('/',             createQuiz);
+      app.get( '/:id/edit',     editQuiz);
+      app.put( '/:id',          updateQuiz);
+      app.put( '/:id/reorder',  reorderQuiz);
+      app.put( '/:id/init',     initQuiz);
+      app.put( '/:id/start',    startQuiz);
+      app.del( '/:id',          deleteQuiz);
+
+      require('./questions')(app, 'routes');
+    });
+  }
 }
 
 // Quiz resource actions

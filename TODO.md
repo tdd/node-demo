@@ -1,16 +1,7 @@
-Trucs à installer
-=================
-
-  * ORM
-    - https://github.com/dresende/node-orm2 ou http://sequelizejs.com/documentation ?
-    - https://github.com/mranney/node_redis
-  * Truc style Turbolinks ?
-    - https://github.com/hackwaly/pjax-middleware ou https://github.com/dakatsuka/express-pjax ?
-
 Étapes de dev
 =============
 
-  6. Module de déroulement d'un quiz
+  >>> 6. Module de déroulement d'un quiz
       1. Lancement en cours : notif "quiz_init", reset complet des joueurs, etc.
       2. Page d'attente pour les joueurs, authentifiée Passport, etc.  Réaction à l'init et auto-join.  Notifié sur la page back d'init.
       -- fin étape --

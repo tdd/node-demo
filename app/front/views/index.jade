@@ -1,0 +1,47 @@
+include ../../mixins
+!!! 5
+html(lang="fr")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title= title
+    link(rel="stylesheet" href="/app.css")
+  body#front
+    .container
+      .page-header.clearfix
+        h1.pull-left= title
+        #user.pull-right
+          span.name= user.name
+          img.avatar(src=user.avatar)
+      include ../../back/views/_flashes
+
+      //- Case 1: no init quiz yet
+      unless engine.currentQuiz
+        .jumbotron
+          .container
+            h1 Pas de quiz actif pour le moment
+            p
+              | Mais ne vous inquiétez pas, il vous suffit de patienter&hellip;&#32;
+              small.text-muted (inutile de rafraîchir, la page se mettra toute seule à jour)
+
+      //- Case 2: quiz initialized but not started yet
+      if engine.currentQuiz && !engine.isRunning()
+        .jumbotron
+          .container
+            h1
+              span.quizName= engine.currentQuiz.title
+              span.text-muted  va démarrer&hellip;
+            ul#players.list-unstyled
+              each user in users
+                li(title=user.name, data-toggle="tooltip")
+                  img.avatar(src=user.avatar, alt=user.name)
+
+        #questionContainer(style="display: none")
+
+    script(src="/vendor.js")
+    script(src="/front.js")
+    script require('front/client/initialize');
+
+    //- Case 3: quiz started, there's an ongoing question
+    if engine.currentQuestion
+      script!= "$(document).trigger('quiz:newQuestion', " + JSON.stringify(engine.currentQuestion) + ');'

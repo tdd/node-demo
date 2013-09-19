@@ -38,9 +38,10 @@ app.configure('development', function() {
 });
 
 // app modules
-require('./back')(app);
-require('./front')(app);
-app.use(app.router);
+require('./back')(app, 'middleware');
+require('./front')(app, 'middleware');
+require('./back')(app, 'routes');
+require('./front')(app, 'routes');
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
