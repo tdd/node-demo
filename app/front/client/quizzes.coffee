@@ -10,3 +10,9 @@ socket.on 'quiz-join', (user) ->
   joinView = joinTpl(user: user)
   ($ '#players').append joinView
   $(document).trigger 'tooltips:refresh', $('#players [data-toggle="tooltip"]').last()
+
+socket.on 'question-start', (question, expiresAt) ->
+  console.log "QUESTION START!", question, expiresAt
+
+socket.on 'question-end', ->
+  console.log "QUESTION END!"

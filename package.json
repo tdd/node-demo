@@ -31,7 +31,8 @@
     "express-namespace": "~0.1.1",
     "sequelize": "~2.0.0-beta.0",
     "connect-flash": "~0.1.1",
-    "coffee-script-brunch": "~1.7.2"
+    "coffee-script-brunch": "~1.7.2",
+    "moment": "~2.2.1"
   },
   "devDependencies": {
     "coffee-script": "~1.6.3",

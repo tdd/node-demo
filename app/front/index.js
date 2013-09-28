@@ -5,6 +5,7 @@
 var fs              = require('fs');
 var passport        = require('passport');
 var path            = require('path');
+var os              = require('os');
 var TwitterStrategy = require('passport-twitter').Strategy;
 var Sequelize       = require('sequelize');
 var Quiz            = require('../models/quiz');
@@ -71,6 +72,13 @@ function mainPage(req, res) {
 
 function bindWebSockets(server) {
   var sio = io.listen(server);
+  sio.set('log level', 2);
+
+  function justForward(call) {
+    engine.on(call, function() {
+      sio.sockets.emit.apply(sio.sockets, _.flatten([call, arguments]));
+    });
+  }
 
   // Quiz init: notify waiting clients ("No active quiz yet…" front screens)
   engine.on('quiz-init', function(quiz) {
@@ -80,9 +88,13 @@ function bindWebSockets(server) {
   });
 
   // Quiz join: a new user comes in the engine while a quiz is at init stage.
-  engine.on('quiz-join', function(user, playerCountStr) {
-    sio.sockets.emit('quiz-join', user, playerCountStr);
-  });
+  justForward('quiz-join');
+
+  // Question start: a new question starts! (including quiz start)
+  justForward('question-start');
+
+  // Question ends!
+  justForward('question-end');
 }
 
 // Frontoffice authentication setup
@@ -108,8 +120,13 @@ function readCredentials(cb) {
 }
 
 readCredentials(function(creds) {
+  var localIPv4 = _.chain(os.networkInterfaces()).values().flatten()
+    .findWhere({ family: 'IPv4', internal: false }).value();
+  localIPv4 = localIPv4 ? localIPv4.address : '127.0.0.1';
+  console.log('OAuth callback IP', localIPv4);
+
   passport.use(new TwitterStrategy(
-    _.extend(creds, { callbackURL: 'http://192.168.0.45:3000/front' + OAUTH_CALLBACK_PATH }),
+    _.extend(creds, { callbackURL: 'http://' + localIPv4 + ':3000/front' + OAUTH_CALLBACK_PATH }),
     function(token, tokenSecret, profile, done) {
       var user = {
         id: profile.id,
