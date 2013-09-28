@@ -1,2 +1,7 @@
 mixin icon(kind, classes)
   i.glyphicon(class="glyphicon-#{kind} #{classes}")
+
+mixin starred_level(quiz)
+  - for (var i = 0; i < quiz.level; ++i)
+    +icon('star')
+

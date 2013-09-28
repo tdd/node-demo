@@ -1,1 +1,2 @@
 require './tooltips'
+require './quizzes'

@@ -1,0 +1,14 @@
+include ../../mixins
+
+.jumbotron
+  .container
+    h1
+      span.quizName= quiz.title
+      span.text-muted  va démarrer&hellip;
+    p.text-muted
+      +starred_level(quiz)
+      &nbsp;
+      = quiz.description
+    ul#players.list-unstyled
+      each user in users
+        include quiz_user

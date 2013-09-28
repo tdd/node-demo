@@ -1,7 +1,7 @@
 exports.config =
   # See https://github.com/brunch/brunch/blob/stable/docs/config.md for documentation.
   paths:
-    watched: ['app/back/client', 'app/front/client', 'vendor']
+    watched: ['app/back/client', 'app/front/client', 'app/front/views', 'vendor']
     public: 'public'
   files:
     javascripts:
@@ -23,5 +23,5 @@ exports.config =
         ]
 
     templates:
-      joinTo: 'app.js'
+      joinTo: 'front.js'
   # optimize: true

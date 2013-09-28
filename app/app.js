@@ -6,6 +6,7 @@ var path = require('path');
 var passport = require('passport');
 
 var app = express();
+var server = http.createServer(app);
 var publicPath = path.join(__dirname, '..', 'public');
 
 // all environments
@@ -30,7 +31,7 @@ app.use(function(req, res, next) {
 });
 
 // Shared locals for all views
-app.locals.title = "BLEND JS Quiz (Node Demo)";
+app.locals.title = "BLEND JS Quiz";
 
 // development only
 app.configure('development', function() {
@@ -39,10 +40,10 @@ app.configure('development', function() {
 
 // app modules
 require('./back')(app, 'middleware');
-require('./front')(app, 'middleware');
+require('./front')(app, 'middleware', server);
 require('./back')(app, 'routes');
 require('./front')(app, 'routes');
 
-http.createServer(app).listen(app.get('port'), function(){
+server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });

@@ -124,7 +124,7 @@ function listQuizzes(req, res) {
         acc[row.id] = row.questions;
         return acc;
       }, {});
-      res.render('index', { quizzes: quizzes, counters: counters });
+      res.render('index', { engine: engine, quizzes: quizzes, counters: counters });
     });
   });
 }

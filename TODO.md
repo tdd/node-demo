@@ -2,10 +2,7 @@
 =============
 
   >>> 6. Module de déroulement d'un quiz
-      1. Lancement en cours : notif "quiz_init", reset complet des joueurs, etc.
-      2. Page d'attente pour les joueurs, authentifiée Passport, etc.  Réaction à l'init et auto-join.  Notifié sur la page back d'init.
-      -- fin étape --
-      3. Lancement du quiz (verrouille les joins)
+      3. Lancement du quiz
       4. Init de question : notif "question_start" aux joueurs, chrono de fin côté serveur, stockage état dans Redis (et màj à chaque seconde qui passe).  Log en couleurs au lancement.
       5. Page de question joueur : rendering, chrono côté joueur, toggling réponse avec envoi WS à la volée, verrouillage post-chrono, etc.
       6. Serveur en réception de réponse : événement interne "new_answer" ou "edit_answer", stockage Redis.

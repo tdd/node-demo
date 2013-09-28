@@ -10,6 +10,7 @@ var Sequelize       = require('sequelize');
 var Quiz            = require('../models/quiz');
 var engine          = require('../engine');
 var _               = require('underscore');
+var io              = require('socket.io');
 
 module.exports = frontOfficeApp;
 
@@ -18,8 +19,10 @@ var OAUTH_CALLBACK_PATH = '/ohai';
 // Subapp setup
 // ============
 
-function frontOfficeApp(app, mode) {
+function frontOfficeApp(app, mode, server) {
   if ('routes' !== mode) {
+    bindWebSockets(server);
+
     // Subapp-local views
     app.use('/front', function useLocalViews(req, res, next) {
       app.set('views', path.join(__dirname, 'views'));
@@ -50,9 +53,35 @@ function frontOfficeApp(app, mode) {
 
 function mainPage(req, res) {
   engine.checkAuth(req, res, function() {
+    if (engine.currentQuiz) {
+      engine.getUsers(function(users) {
+        res.render('index', { user: req.user, engine: engine, users: users });
+      });
+    } else {
+      res.render('index', { user: req.user, engine: engine });
+    }
+  });
+}
+
+// WebSockets manager
+// ==================
+
+// This binds a WebSockets layer over the HTTP app and provides the gateway
+// between WS traffic and the engine (both ways).
+
+function bindWebSockets(server) {
+  var sio = io.listen(server);
+
+  // Quiz init: notify waiting clients ("No active quiz yet…" front screens)
+  engine.on('quiz-init', function(quiz) {
     engine.getUsers(function(users) {
-      res.render('index', { user: req.user, engine: engine, users: users });
+      sio.sockets.emit('quiz-init', _.pick(quiz, 'title', 'description', 'level'), users);
     });
+  });
+
+  // Quiz join: a new user comes in the engine while a quiz is at init stage.
+  engine.on('quiz-join', function(user, playerCountStr) {
+    sio.sockets.emit('quiz-join', user, playerCountStr);
   });
 }
 
@@ -80,7 +109,7 @@ function readCredentials(cb) {
 
 readCredentials(function(creds) {
   passport.use(new TwitterStrategy(
-    _.extend(creds, { callbackURL: 'http://localhost:3000/front' + OAUTH_CALLBACK_PATH }),
+    _.extend(creds, { callbackURL: 'http://192.168.0.45:3000/front' + OAUTH_CALLBACK_PATH }),
     function(token, tokenSecret, profile, done) {
       var user = {
         id: profile.id,

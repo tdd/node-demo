@@ -15,30 +15,23 @@ html(lang="fr")
           img.avatar(src=user.avatar)
       include ../../back/views/_flashes
 
-      //- Case 1: no init quiz yet
-      unless engine.currentQuiz
-        .jumbotron
-          .container
-            h1 Pas de quiz actif pour le moment
-            p
-              | Mais ne vous inquiétez pas, il vous suffit de patienter&hellip;&#32;
-              small.text-muted (inutile de rafraîchir, la page se mettra toute seule à jour)
+      #coreContainer
+        //- Case 1: no init quiz yet
+        unless engine.currentQuiz
+          .jumbotron
+            .container
+              h1 Pas de quiz actif pour le moment
+              p
+                | Mais ne vous inquiétez pas, il vous suffit de patienter&hellip;&#32;
+                small.text-muted (inutile de rafraîchir, la page se mettra toute seule à jour)
 
-      //- Case 2: quiz initialized but not started yet
-      if engine.currentQuiz && !engine.isRunning()
-        .jumbotron
-          .container
-            h1
-              span.quizName= engine.currentQuiz.title
-              span.text-muted  va démarrer&hellip;
-            ul#players.list-unstyled
-              each user in users
-                li(title=user.name, data-toggle="tooltip")
-                  img.avatar(src=user.avatar, alt=user.name)
-
-        #questionContainer(style="display: none")
+        //- Case 2: quiz initialized but not started yet
+        if engine.currentQuiz && !engine.isRunning()
+          - quiz = engine.currentQuiz
+          include quiz_init
 
     script(src="/vendor.js")
+    script(src="/socket.io/socket.io.js")
     script(src="/front.js")
     script require('front/client/initialize');
 

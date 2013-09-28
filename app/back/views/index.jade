@@ -47,6 +47,7 @@ block content
                     button.btn.btn-success.btn-xs(type="submit")
                       +icon('flash')
                       |  Démarrer !
+                  #currentPlayers.text-muted= engine.playerCount
               else if counters[quiz.id] > 0
                 form(method="post", action="/admin/quizzes/#{quiz.id}/init", style="display: inline")
                   input(type="hidden", name="_method", value="put")
