@@ -39,14 +39,12 @@ block content
               = counters[quiz.id] || 0
               &nbsp;
               if quiz.isCurrent()
-                if quiz.isStarted()
-                  span.text-muted Le quiz est en cours&hellip;
-                else
-                  form(method="post", action="/admin/quizzes/#{quiz.id}/start", style="display: inline")
-                    input(type="hidden", name="_method", value="put")
-                    button.btn.btn-success.btn-xs(type="submit")
-                      +icon('flash')
-                      |  Démarrer !
+                p.start-notice.text-muted(style=(quiz.isStarted() ? '' : 'display: none')) Le quiz est en cours&hellip;
+                form(method="post", action="/admin/quizzes/#{quiz.id}/start", style="display: inline", 'data-action'="start")
+                  input(type="hidden", name="_method", value="put")
+                  button.btn.btn-success.btn-xs(type="submit")
+                    +icon('flash')
+                    |  (Re)démarrer !
                   #currentPlayers.text-muted= engine.playerCount
               else if counters[quiz.id] > 0
                 form(method="post", action="/admin/quizzes/#{quiz.id}/init", style="display: inline")
@@ -61,3 +59,7 @@ block content
                   +icon('trash')
                   &nbsp;
                   | Supprimer
+
+    ul#currentAnswers.list-unstyled
+    #countDown(style="display: none")
+    #feedback

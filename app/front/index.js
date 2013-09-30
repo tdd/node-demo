@@ -5,13 +5,13 @@
 var fs              = require('fs');
 var passport        = require('passport');
 var path            = require('path');
-var os              = require('os');
 var TwitterStrategy = require('passport-twitter').Strategy;
 var Sequelize       = require('sequelize');
 var Quiz            = require('../models/quiz');
 var engine          = require('../engine');
 var _               = require('underscore');
 var io              = require('socket.io');
+var localIP         = require('../client/local_ip').localIP;
 
 module.exports = frontOfficeApp;
 
@@ -55,7 +55,8 @@ function frontOfficeApp(app, mode, server) {
 function mainPage(req, res) {
   engine.checkAuth(req, res, function() {
     if (engine.currentQuiz) {
-      engine.getUsers(function(users) {
+      engine.getUsers(function(err, users) {
+        if (err) throw err;
         res.render('index', { user: req.user, engine: engine, users: users });
       });
     } else {
@@ -82,7 +83,8 @@ function bindWebSockets(server) {
 
   // Quiz init: notify waiting clients ("No active quiz yet…" front screens)
   engine.on('quiz-init', function(quiz) {
-    engine.getUsers(function(users) {
+    engine.getUsers(function(err, users) {
+      if (err) throw err;
       sio.sockets.emit('quiz-init', _.pick(quiz, 'title', 'description', 'level'), users);
     });
   });
@@ -93,8 +95,34 @@ function bindWebSockets(server) {
   // Question start: a new question starts! (including quiz start)
   justForward('question-start');
 
+  // Answers coming in (input)
+  sio.sockets.on('connection', function(socket) {
+    socket.on('answer', function(answer) {
+      socket.set('userId', answer.userId);
+      engine.handleAnswer(answer);
+    });
+  });
+
+  // Answers getting in (output)
+  justForward('new-answer');
+  justForward('edit-answer');
+
   // Question ends!
   justForward('question-end');
+
+  // Quiz ends!
+  engine.on('quiz-end', function(scoreboard) {
+    // For every socket, check whether it's a player, and if so get and send their scoring.
+    sio.sockets.clients().forEach(function(socket) {
+      socket.get('userId', function(err, userId) {
+        var scoring = userId && _.findWhere(scoreboard, { id: userId });
+        if (scoring) {
+          scoring.rank = scoreboard.indexOf(scoring) + 1;
+        }
+        socket.emit('quiz-end', scoring);
+      });
+    });
+  });
 }
 
 // Frontoffice authentication setup
@@ -120,13 +148,10 @@ function readCredentials(cb) {
 }
 
 readCredentials(function(creds) {
-  var localIPv4 = _.chain(os.networkInterfaces()).values().flatten()
-    .findWhere({ family: 'IPv4', internal: false }).value();
-  localIPv4 = localIPv4 ? localIPv4.address : '127.0.0.1';
-  console.log('OAuth callback IP', localIPv4);
+  console.log('OAuth callback IP', localIP);
 
   passport.use(new TwitterStrategy(
-    _.extend(creds, { callbackURL: 'http://' + localIPv4 + ':3000/front' + OAUTH_CALLBACK_PATH }),
+    _.extend(creds, { callbackURL: 'http://' + localIP + ':3000/front' + OAUTH_CALLBACK_PATH }),
     function(token, tokenSecret, profile, done) {
       var user = {
         id: profile.id,

@@ -1,0 +1,20 @@
+extends layout
+include ../../mixins
+include mixins
+
+block content
+  table#scoreboard.table-striped
+    thead
+      tr
+        th.col-md-1 Rang
+        th Joueur
+        th.col-md-1 Score
+    tbody
+      each user, index in board
+        tr
+          td= index + 1
+          td
+            img.avatar(src=user.avatar, alt=user.name)
+            = user.name
+
+          td= user.score

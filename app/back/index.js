@@ -12,6 +12,7 @@ var Question = require('../models/question');
 var checkboxNormalizer = require('./checkbox_normalizer');
 var engine = require('../engine');
 var _ = require('underscore');
+var localIP = require('../client/local_ip').localIP;
 
 module.exports = backOfficeApp;
 
@@ -28,6 +29,7 @@ function backOfficeApp(app, mode) {
     // Subapp-local views
     app.use('/admin', function useLocalViews(req, res, next) {
       app.set('views', path.join(__dirname, 'views'));
+      app.locals.localIP = localIP;
       next();
     });
 
@@ -51,6 +53,11 @@ function backOfficeApp(app, mode) {
   }
 
   if ('middleware' !== mode) {
+    // Root access should redirect to the backoffice main page
+    app.all('/admin', function(req, res) {
+      res.redirect(301, '/admin/quizzes');
+    });
+
     // Namespaced routes (REST resource routes)
     app.namespace('/admin/quizzes', function() {
       app.get( '/',             listQuizzes);
@@ -61,7 +68,9 @@ function backOfficeApp(app, mode) {
       app.put( '/:id/reorder',  reorderQuiz);
       app.put( '/:id/init',     initQuiz);
       app.put( '/:id/start',    startQuiz);
+      app.put( '/:id/next',     nextQuestion);
       app.del( '/:id',          deleteQuiz);
+      app.get( '/scoreboard',   scoreboard);
 
       require('./questions')(app, 'routes');
     });
@@ -124,8 +133,16 @@ function listQuizzes(req, res) {
         acc[row.id] = row.questions;
         return acc;
       }, {});
+
       res.render('index', { engine: engine, quizzes: quizzes, counters: counters });
     });
+  });
+}
+
+// Action: next question (Ajax)
+function nextQuestion(req, res) {
+  engine.nextQuestion().then(function() {
+    res.send(200, 'Next question');
   });
 }
 
@@ -152,11 +169,27 @@ function reorderQuiz(req, res) {
   });
 }
 
+// Action: score board
+function scoreboard(req, res) {
+  engine.getLatestScoreboard(function(err, scoreboard) {
+    if (err) throw err;
+    res.render('scoreboard', {
+      board: scoreboard,
+      title: 'Derniers scores',
+      breadcrumbs: buildBreadcrumbs('Derniers scores')
+    });
+  });
+}
+
 // Action: start quiz
 function startQuiz(req, res) {
   engine.start().then(function() {
-    req.flash('success', "Le quiz « " + req.quiz.title + " » vient de démarrer.");
-    res.redirect('/admin/quizzes');
+    if (req.xhr) {
+      res.send(200, 'Started');
+    } else {
+      req.flash('success', "Le quiz « " + req.quiz.title + " » vient de démarrer.");
+      res.redirect('/admin/quizzes');
+    }
   });
 }
 
@@ -181,7 +214,7 @@ function updateQuiz(req, res) {
 function buildBreadcrumbs(quiz) {
   return [
     { url: '/admin/quizzes', label: 'Quizzes' },
-    { label: quiz ? quiz.title : 'Nouveau quiz' }
+    { label: quiz ? quiz.title || quiz : 'Nouveau quiz' }
   ];
 }
 

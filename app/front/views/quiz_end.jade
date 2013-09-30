@@ -1,0 +1,15 @@
+include ../../mixins
+
+h1
+  +icon('question-star')
+  |  C’est fini !
+
+
+table.table-responsive.table-striped
+  tbody
+    tr
+      th.col-md-6 Votre score
+      td.col-md-6= scoring.score
+    tr
+      th.col-md-6 Votre rang
+      td.col-md-6= scoring.rank

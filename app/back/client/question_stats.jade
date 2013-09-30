@@ -1,0 +1,34 @@
+include ../../mixins
+
+//- Spreads and correctness
+.row
+  .col-md-2
+    each spread, index in stats.spreads
+      div
+        = String.fromCharCode(65 + index)
+        if stats.statuses[index]
+          | *
+        |  :&#32;
+        = spread.count
+        &nbsp;
+        span.text-muted (#{spread.percent}%)
+  .col-md-3
+    div
+      if 0 == stats.correctCount
+        | Aucune bonne réponse :-(
+      else if 1 == stats.correctCount
+        | Une bonne réponse
+        &nbsp;
+        span.text-muted (#{stats.correctPercent}%)
+      else
+        | #{stats.correctCount} bonnes réponses
+        &nbsp;
+        span.text-muted (#{stats.correctPercent}%)
+    a#nextQuestion.btn.btn-primary(href="/admin/quizzes/#{quizId}/next")
+      | Question suivante
+      &nbsp;
+      +icon('forward')
+  .col-md-7
+    ul#players.list-unstyled
+      each user in stats.random10Bests
+        include ../../front/views/quiz_user

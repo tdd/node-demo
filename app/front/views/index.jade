@@ -4,11 +4,12 @@ html(lang="fr")
   head
     meta(charset="utf-8")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    meta(name="user-id" content=user.id)
     title= title
     link(rel="stylesheet" href="/app.css")
   body#front
     .container
-      .page-header.clearfix
+      .page-header.clearfix(style=(engine.currentQuestion ? 'display: none' : ''))
         h1.pull-left= title
         #user.pull-right
           span.name= user.name
@@ -29,6 +30,10 @@ html(lang="fr")
         if engine.currentQuiz && !engine.isRunning()
           - quiz = engine.currentQuiz
           include quiz_init
+
+        if engine.currentQuestion
+          - question = engine.currentQuestion
+          include question
 
     script(src="/vendor.js")
     script(src="/socket.io/socket.io.js")

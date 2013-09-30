@@ -31,7 +31,7 @@ app.use(function(req, res, next) {
 });
 
 // Shared locals for all views
-app.locals.title = "BLEND JS Quiz";
+app.locals.title = "LyonJS Quiz";
 
 // development only
 app.configure('development', function() {
