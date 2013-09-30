@@ -48,6 +48,7 @@
     "type": "git",
     "url": "git@github.com:tdd/blend-demo.git"
   },
+  "bin": ".bin/blend-demo",
   "keywords": [
     "demo",
     "blend",

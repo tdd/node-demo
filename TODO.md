@@ -9,7 +9,6 @@
       5. Lancement de question -> bon rendering côté client
       6. Envoi de réponse -> bonne perception côté serveur
   8. CLI
-      1. Possibilité de lancer avec un quiz en init auto, un passage auto à question suivante après un certain délai, de préloader un quiz depuis un JSON, etc.
       2. Production du man correspondant à l'aide de marked-man et de npm install -g, par exemple.
       -- fin étape --
   9. Module d'interfaçage Arduino ; repose sur les notifs du module de déroulé

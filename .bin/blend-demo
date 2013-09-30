@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+
+process.env.NODE_ENV = 'binary';
+
+var program = require('optimist');
+var pkg     = require('../package.json'),
+    appName = pkg.name, appVersion = pkg.version;
+var engine  = require('../app/engine');
+
+var argv = program
+  .usage(appName + ' ' + appVersion + "\nUsage: " + appName + ' [options]')
+  .alias('i', 'auto-init').describe('i', 'Auto-inits the passed [quiz ID]')
+  .alias('h', 'help')
+  .argv;
+
+if (argv.help) {
+  program.showHelp();
+  process.exit(0);
+}
+
+require('../app/app');
+
+if (argv['auto-init']) {
+  engine.initQuiz(argv['auto-init']).then(function(quiz) {
+    console.log('Quiz “' + quiz.title + '” initialized and ready to start.');
+  });
+}
