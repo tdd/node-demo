@@ -15,15 +15,7 @@
     "request": "~2.27.0",
     "socket.io": "~0.9.16",
     "underscore": "~1.5.2",
-    "coffee-script": "~1.6.3",
-    "mocha": "~1.12.1",
     "passport-twitter": "~1.0.1",
-    "css-brunch": "~1.6.0",
-    "javascript-brunch": "~1.6.0",
-    "uglify-js-brunch": "~1.7.2",
-    "jade-brunch": "~1.7.2",
-    "stylus-brunch": "~1.7.0",
-    "clean-css-brunch": "~1.6.0",
     "passport": "~0.1.17",
     "passport-http": "~0.2.2",
     "sqlite3": "~2.1.15",
@@ -31,13 +23,20 @@
     "express-namespace": "~0.1.1",
     "sequelize": "~2.0.0-beta.0",
     "connect-flash": "~0.1.1",
-    "coffee-script-brunch": "~1.7.2",
     "moment": "~2.2.1",
-    "promise": "~3.2.0"
+    "promise": "~3.2.0",
+    "johnny-five": "~0.7.3"
   },
   "devDependencies": {
     "coffee-script": "~1.6.3",
-    "mocha": "~1.12.1"
+    "mocha": "~1.12.1",
+    "css-brunch": "~1.6.0",
+    "javascript-brunch": "~1.6.0",
+    "uglify-js-brunch": "~1.7.2",
+    "jade-brunch": "~1.7.2",
+    "stylus-brunch": "~1.7.0",
+    "clean-css-brunch": "~1.6.0",
+    "coffee-script-brunch": "~1.7.2"
   },
   "readmeFilename": "README.md",
   "scripts": {

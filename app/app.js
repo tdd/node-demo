@@ -31,7 +31,7 @@ app.use(function(req, res, next) {
 });
 
 // Shared locals for all views
-app.locals.title = "LyonJS Quiz";
+app.locals.title = "BLEND Quiz";
 
 // development only
 app.configure('development', function() {
@@ -43,6 +43,7 @@ require('./back')(app, 'middleware');
 require('./front')(app, 'middleware', server);
 require('./back')(app, 'routes');
 require('./front')(app, 'routes');
+require('./arduino');
 
 server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
