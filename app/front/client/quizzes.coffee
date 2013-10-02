@@ -5,7 +5,7 @@ socket = io.connect()
 answersAcceptable = false
 
 # Rendering helper
-# ================
+# ----------------
 
 renderCoreView = (tpl, hasHeader, params) ->
   tpl = require("front/views/#{tpl}")
@@ -15,7 +15,7 @@ renderCoreView = (tpl, hasHeader, params) ->
   params.render? html
 
 # Realtime server-to-client notifications
-# =======================================
+# ---------------------------------------
 
 socket.on 'quiz-init', (quiz, users) ->
   renderCoreView 'quiz_init', true, quiz: quiz, users: users
@@ -25,6 +25,7 @@ socket.on 'quiz-join', (user) ->
     ($ '#players').append html
     $(document).trigger 'tooltips:refresh', $('#players [data-toggle="tooltip"]').last()
 
+# Question starts: update UI and start countdown
 socket.on 'question-start', (question, expiresAt) ->
   question.expiresAt = expiresAt
   question.remainingTime = toolkit.remainingTime
@@ -37,6 +38,8 @@ socket.on 'question-start', (question, expiresAt) ->
 
   itv = setInterval(chrono, 1000)
 
+# Question ends: adapt the UI to render player stats and correct answers.
+# Also, forbid further answering until further notice.
 socket.on 'question-end', (stats) ->
   answersAcceptable = false
   btns = $('button')
@@ -57,6 +60,9 @@ userId = null
 fetchUserId = ->
   userId = ($ 'meta[name="user-id"]').attr('content')
 
+# Grab clicks on any displayed button to toggle the selection of that answer and
+# turn it, if relevant at that point in time, into a WebSocket-driven answer
+# notification towards the server.
 handleButtonPress = (e) ->
   e.currentTarget.blur()
   unless answersAcceptable

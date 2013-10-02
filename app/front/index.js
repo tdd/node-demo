@@ -1,6 +1,5 @@
-/*
- * Frontoffice sub-app for quiz running.
- */
+// Frontoffice sub-app for quiz running
+// ------------------------------------
 
 var fs              = require('fs');
 var passport        = require('passport');
@@ -18,19 +17,25 @@ module.exports = frontOfficeApp;
 var OAUTH_CALLBACK_PATH = '/ohai';
 
 // Subapp setup
-// ============
+// ------------
 
+// This is the function this module exports.  Because Express will block
+// any further middleware once a route is registered, this behaves in two
+// modes: middleware (non-route) and route (non-middleware).  Calling it
+// without a mode (or with an invalid mode) does everything.
 function frontOfficeApp(app, mode, server) {
+  // Middleware-only or generic context
   if ('routes' !== mode) {
     bindWebSockets(server);
 
-    // Subapp-local views
+    // Subapp-local view path
     app.use('/front', function useLocalViews(req, res, next) {
       app.set('views', path.join(__dirname, 'views'));
       next();
     });
   }
 
+  // Routes-only or generic context
   if ('middleware' !== mode) {
     // Root access should redirect to the frontoffice subapp
     app.all('/', function(req, res) {
@@ -41,8 +46,11 @@ function frontOfficeApp(app, mode, server) {
     app.namespace('/front', function() {
       app.get('/', mainPage);
 
+      // Subapp authentication (using a previously registered Twitter strategy,
+      // see the bottom of this file)
       app.get('/auth', passport.authenticate('twitter'));
 
+      // OAuth callback for the Twitter strategy
       app.get(OAUTH_CALLBACK_PATH, passport.authenticate('twitter', {
         successRedirect: '/front',
         failureFlash: true,
@@ -52,6 +60,7 @@ function frontOfficeApp(app, mode, server) {
   }
 }
 
+// Action: main page (initial rendering)
 function mainPage(req, res) {
   engine.checkAuth(req, res, function() {
     if (engine.currentQuiz) {
@@ -66,15 +75,16 @@ function mainPage(req, res) {
 }
 
 // WebSockets manager
-// ==================
+// ------------------
 
 // This binds a WebSockets layer over the HTTP app and provides the gateway
 // between WS traffic and the engine (both ways).
-
 function bindWebSockets(server) {
   var sio = io.listen(server);
   sio.set('log level', 2);
 
+  // Convenience forwarder when the WS "event" is exactly the same
+  // as the engine-emitted event.
   function justForward(call) {
     engine.on(call, function() {
       sio.sockets.emit.apply(sio.sockets, _.flatten([call, arguments]));
@@ -126,12 +136,11 @@ function bindWebSockets(server) {
 }
 
 // Frontoffice authentication setup
-// ================================
+// --------------------------------
 
 // Read credentials off a JSON file
 // in this file's directory and initialize a Passport Twitter OAuth strategy
 // with those.
-
 function readCredentials(cb) {
   fs.readFile(path.join(__dirname, 'credentials.json'), function(err, json) {
     if (err)
@@ -147,6 +156,9 @@ function readCredentials(cb) {
   });
 }
 
+// Read the OAuth credentials (consumer key, consumer secret) for the Twitter App
+// you registered as a developer, then define a Twitter strategy
+// the Passport authentication middleware can use (see above)
 readCredentials(function(creds) {
   console.log('OAuth callback IP', localIP);
 
@@ -164,12 +176,10 @@ readCredentials(function(creds) {
   ));
 
   passport.serializeUser(function(user, done) {
-    // Everything for now, but when deserialize looks it up in Redis, id only.
     done(null, user);
   });
 
   passport.deserializeUser(function(user, done) {
-    // Nothing for now, but when we look it up in Redis, we'll get the id only.
     done(null, user);
   });
 });

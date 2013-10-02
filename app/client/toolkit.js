@@ -1,3 +1,6 @@
+// A simple remaining-time formatter used by server-rendered views
+// and client-rendered views alike.
+
 function remainingTime() {
   if (undefined === this.expiresAt)
     return '';

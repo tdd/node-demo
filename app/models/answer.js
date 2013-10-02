@@ -1,3 +1,6 @@
+// The Answer model
+// ================
+
 var db = require('./db');
 var Question = require('./question');
 
@@ -8,9 +11,11 @@ var Answer = db.define('answer', {
   correct:      { type: db.types.BOOLEAN, allowNull: false, defaultValue: false }
 });
 
+// Relationships Quiz/Question that define accessors and finders.
 Question.hasMany(Answer, { onDelete: 'cascade' });
 Answer.belongsTo(Question);
 
+// Ensure the table exists in the DB
 Answer.sync();
 
 module.exports = Answer;

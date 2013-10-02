@@ -19,10 +19,15 @@ DESCRIPTION
 
 Coming soon.
 
+INSTALLATION
+------------
+
+FIXME: node/npm, SQLite, Redis, npm install, credentials (incl OAuth app setup), Brunch, quiz fill-in, etc. And "bin" mode, including npm install -g and the man page.
+
 OPTIONS
 -------
 
-`blend-demo` accepts the following options
+`blend-demo` as a binary accepts the following options.
 
 * -i, --auto-init QUIZ_ID
   Sets the output format. Outputs html if different from `roff`.
@@ -31,6 +36,9 @@ OPTIONS
 * -h, --help
   Displays usage.
 
+
+WANT TO LEARN NODE?
+-------------------
 
 REPORTING BUGS
 --------------

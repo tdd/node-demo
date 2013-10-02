@@ -1,6 +1,5 @@
-/*
- * Backoffice sub-app for quiz management (questions inside quizzes).
- */
+// Backoffice sub-app for question management (inside quizzes)
+// -----------------------------------------------------------
 
 var Question = require('../models/question');
 var Answer = require('../models/answer');
@@ -9,11 +8,17 @@ var _ = require('underscore');
 module.exports = questionsApp;
 
 // Subapp setup
-// ============
+// ------------
 
+// This is the function this module exports.  Because Express will block
+// any further middleware once a route is registered, this behaves in two
+// modes: middleware (non-route) and route (non-middleware).  Calling it
+// without a mode (or with an invalid mode) does everything.
 function questionsApp(app, mode) {
+  // Middleware-only or generic context
   if ('routes' !== mode) {
-    // Subapp model checking
+
+    // Subapp model checking, so we have `req.question` whenever relevant.
     app.use('/admin/quizzes', function checkQuestionModel(req, res, next) {
       var questionId = (req.url.match(/\/questions\/(\d+)\b/) || [])[1];
       if (undefined === questionId)
@@ -31,6 +36,7 @@ function questionsApp(app, mode) {
     });
   }
 
+  // Route-only or generic context
   if ('middleware' !== mode) {
     // Namespaced routes (REST resource routes, basically)
     app.namespace('/:quiz_id/questions', function() {
@@ -44,12 +50,14 @@ function questionsApp(app, mode) {
 }
 
 // Quiz resource actions
-// =====================
+// ---------------------
 
 // Action: create question
 function createQuestion(req, res) {
   var question = Question.build(req.body.question);
   question.quizId = req.quiz.id;
+  // We sequence methods (async or not) here using promises.  The error case is
+  // handled by passing the last `.then` call a second callback.
   req.quiz.getNextQuestionPosition()
     .then(function(nextPos) { question.position = nextPos; })
     .then(function() { return question.save(); })
@@ -117,7 +125,7 @@ function updateQuestion(req, res) {
     })
     .error(function() {
       question.errors = _.extend.apply(_, arguments);
-      console.log('QUESTION ERRORS:', question.errors)
+      console.log('QUESTION ERRORS:', question.errors);
       res.render('questions/edit', {
         answers: buildAnswers(req.body.answers),
         quiz: req.quiz,
@@ -129,13 +137,15 @@ function updateQuestion(req, res) {
 }
 
 // Inlined answers management
-// ==========================
+// --------------------------
 
 var MIN_PROPOSED_ANSWERS = 4;
 var MIN_BLANKED_ANSWERS  = 2;
 
 var RE_BLANK = /^\s*$/;
 
+// Convenience method to ensure our answers array includes a minimum amount of
+// `Answer` objects **and** at least a given amount of blank answers for further addition.
 function buildAnswers(existing) {
   var blankAnswers = 0, result = existing.slice();
   while (result.length < MIN_PROPOSED_ANSWERS || blankAnswers < MIN_BLANKED_ANSWERS) {
@@ -146,6 +156,9 @@ function buildAnswers(existing) {
   return result;
 }
 
+// Core code for inlined answers saving.  This ignores blank answers
+// and (sheer laziness) assumes all errors we could get on saves are validation
+// errors (which happen to be synchronous), not async DB errors.
 function saveAnswers(question, paramAnswers) {
   var pos = 1, hasErrors = false;
   paramAnswers.forEach(function(pa) {
@@ -183,6 +196,7 @@ function saveAnswers(question, paramAnswers) {
   return !hasErrors;
 }
 
+// Convenience method to build proper breadcrumbs for the various views.
 function buildBreadcrumbs(quiz, question) {
   return [
     { url: '/admin/quizzes', label: 'Quizzes' },

@@ -1,3 +1,7 @@
+# Question reordering inside a quiz (questions tab).
+# Reordering is persisted through Ajax on-the-fly so
+# no extra submission is required.
+
 PERSIST_URL_ATTR = 'data-remote-url'
 
 adjustFields = (set) ->

@@ -1,3 +1,6 @@
+# Brunch configuration
+# ====================
+
 exports.config =
   # See https://github.com/brunch/brunch/blob/stable/docs/config.md for documentation.
   paths:

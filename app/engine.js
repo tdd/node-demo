@@ -247,32 +247,50 @@ var Engine = _.extend(new events.EventEmitter(), {
     if (!this.isRunning())
       return;
 
+    // Make sure we have actual Numbers in there, not just Strings.
+    // `Number(x)` is the nominal conversion protocol, so we can pass `Number` as a mapper
+    // function.
     answer.answerIds = _.map(answer.answerIds, Number);
     var self = this;
     redis.hget(PLAYERS_KEY, answer.userId, function(err, record) {
       if (err) throw err;
 
+      // Redis stores values as strings: parse the JSON out of it, if present
+      // (further down, we'll JSONify back before re-storing).
       record = record ? JSON.parse(record) : { score: 0 };
       var firstTimeAnswer = record.currentQuestionId !== self.currentQuestion.id;
       record.currentQuestionId = self.currentQuestion.id;
       record.answerIds = answer.answerIds;
+      // Update the "current answer set is correct" flag on the fly.
       record.currentQuestionCorrect = self.currentQuestion.checkAnswers(answer.answerIds);
       redis.hset(PLAYERS_KEY, answer.userId, JSON.stringify(record));
 
+      // Notify the system that an answer was given/updated, and pass individual answer flags
+      // along in case listeners react differently based on selected answer items.  Also pass
+      // the answerer's ID, just in case.
       var bools = _.map(self.currentQuestion.answers, function(a) { return _.contains(answer.answerIds, a.id); });
       self.emit(firstTimeAnswer ? 'new-answer' : 'edit-answer', +answer.userId, bools);
     });
   },
 
+  // Quiz activation/initialization
+  // ------------------------------
+
   initQuiz: function initQuiz(quizId) {
     var self = this;
     self.reset('quiz');
 
+    // In case we got passed a descriptor object, just get its `id`.
     if (quizId.id)
       quizId = quizId.id;
+
+    // Returning a `find` result, even through `success`, means we return
+    // a promise for calling code to chain against / wait for, making it
+    // easier to write.
     return Quiz.find(quizId).success(function(quiz) {
       self.currentQuiz = quiz;
       log('info', 'Quiz inits: ' + quiz.title);
+      // Initializing a quiz resets quiz-state storage, so all players start anew.
       redis.del(PLAYERS_KEY, function(err) {
         if (err) throw err;
 
@@ -281,14 +299,32 @@ var Engine = _.extend(new events.EventEmitter(), {
     });
   },
 
+  // Simple helper to tell whether a quiz is currently going on (not just init'd, but started).
   isRunning: function isRunning() { return !!this.currentQuestion; },
 
+  // Quiz stepping
+  // -------------
+
+  // This is the core step-ahead mechanism for a quiz.  When a quiz starts, it
+  // actually ends up delegating to this.  This returns a promise that calling code
+  // can chain against / wait for to be sure that either the next question is up, or
+  // the quiz is done, except if the quiz isn't even started (returns `undefined`).
   nextQuestion: function nextQuestion() {
+    // Not started?  Forget it!
     if (0 === this.startedAt)
       return;
 
+    // Next-question selector logic.  We build up selecting options for the ORM.
+
     var opts = { where: { visible: true }, order: 'questions.position, answers.position',
       limit: 1, include: [Answer] };
+
+    // If we run on a randomized quiz, starting it picked a random, one-time ordering
+    // of the questions and stored it in `this.questionIds`, in which case we should
+    // rely on it. If it's empty, the quiz is done.  Otherwise we'll grab the next
+    // question ID and explictly fetch that one.  If there is no `questionIds` property,
+    // we'll just get the next question by ascending `position` order, if any.
+
     if (this.questionIds) {
       if (!this.questionIds.length) {
         return this.wrapUp();
@@ -299,9 +335,12 @@ var Engine = _.extend(new events.EventEmitter(), {
     }
     var self = this;
 
+    // Here's our promise result, with a built-in success handler chained in.
     return this.currentQuiz.getQuestions(opts).success(function(qs) {
       var question = qs[0];
       if (question) {
+        // There IS a next question matching our criteria?  Awesome, adjust state, persist
+        // in Redis and get on with it!
         self.currentQuestion = question;
         self.currentQuestionExpiresAt = Date.now() + question.duration * 1000;
         self.currentQuestion.expiresAt = self.currentQuestionExpiresAt;
@@ -314,6 +353,7 @@ var Engine = _.extend(new events.EventEmitter(), {
         log('info', 'Question starts: ' + question.title + ' (' + question.duration + 's)');
         self.emit('question-start', question, self.currentQuestionExpiresAt);
       } else {
+        // There ISN'T any question left for our criteria: the quiz is done, wrap it up.
         self.wrapUp();
       }
     }).error(function(res) {
@@ -321,6 +361,9 @@ var Engine = _.extend(new events.EventEmitter(), {
     });
   },
 
+  // Expiry handler bound to a timeout in `nextQuestion`’s success case.
+  // This clears current timers/intervals, adjusts state, computes and persists
+  // current player scores and question stats.
   questionExpires: function questionExpires() {
     clearInterval(this.currentQuestionInterval);
     clearTimeout(this.currentQuestionTimer);
@@ -337,12 +380,15 @@ var Engine = _.extend(new events.EventEmitter(), {
     ]);
   },
 
+  // A simple every-second handler that just persists time passing in Redis
+  // for potential fault tolerance and logs question progress.
   questionProgresses: function questionProgresses() {
     var remaining = this.currentQuestionExpiresAt - Date.now();
     redis.hset(CUR_QUESTION_KEY, 'remaining', remaining);
     log('debug', 'Question has only ' + (remaining / 1000) + 's remaining');
   },
 
+  // A convenience state resetter for quiz and question starts.
   reset: function reset(mode) {
     if ('quiz' == mode) {
       this.currentQuiz = null;
@@ -357,6 +403,12 @@ var Engine = _.extend(new events.EventEmitter(), {
     return this;
   },
 
+  // Quiz start
+  // ----------
+
+  // Once a quiz, post-init, has garnered enough players, we can officially start it.
+  // For randomized quizzes, this defines a one-shot, random ordering of questions.
+  // Then this delegates to `nextQuestion` to pop the first question and get going.
   start: function start(callback) {
     this.startedAt = Date.now();
     this.reset('question');
@@ -367,12 +419,18 @@ var Engine = _.extend(new events.EventEmitter(), {
     }
 
     var self = this;
+    // Notice the two chained `.then` calls, that let us sequence asynchronous
+    // functions the way we need them.  For Sequelize calls, `.then` calls are triggered
+    // on success cases.
     return this.currentQuiz.getQuestions({ where: { visible: true } }).then(function(qs) {
+      // Gotta love Underscore…
       self.questionIds = _.chain(qs).pluck('id').shuffle().value();
       log('info', 'Quiz starts (randomized to ' + self.questionIds.join() + ')');
     }).then(self.nextQuestion);
   },
 
+  // A convenience method called when a question ends, to increment the scores of every
+  // player that was eventually correct, and persist the updated scores in Redis.
   updatePlayerScores: function updatePlayerScores(cb) {
     redis.hgetall(PLAYERS_KEY, function(err, pairs) {
       if (err) throw err;
@@ -389,8 +447,20 @@ var Engine = _.extend(new events.EventEmitter(), {
     });
   },
 
+  // Quiz end
+  // --------
+
+  // This is called from `nextQuestion` when it detects the quiz is out of questions.
+  // this computes the final scoreboard, persist it for later reads, resets state and
+  // notifies the system.
   wrapUp: function wrapUp() {
     var self = this;
+    // This is the one time we explictly create a Promise.  Because Sequelize already uses
+    // [node-promise](https://github.com/kriszyp/node-promise), we stay with this, but this
+    // code would have been a bit simpler with the [`q`](https://github.com/kriskowal/q)
+    // library, where wrapping a regular async method in a promise would just go like
+    // `Q.nfcall(self.computeScoreboard).then(function(scoreboard) { … })` with no need
+    // to call `resolve` eventually.
     return new Promise(function(resolve) {
       self.computeScoreboard(function(err, scoreboard) {
         if (err) throw err;
@@ -402,6 +472,8 @@ var Engine = _.extend(new events.EventEmitter(), {
   }
 });
 
+// We log in color using not actual color names but semantic names defined in our theme:
+// this is where we map to supported color codes.
 colors.setTheme({
   debug: 'blue',
   error: 'red',
@@ -409,12 +481,18 @@ colors.setTheme({
   warn:  'yellow'
 });
 
+// A convenience timestamped logger method used throughout the engine code.
 function log(level, message) {
   message = '*** [' + moment().format('HH:mm:ss') + '] ' + message;
   (console[level] || console.log)(message[level]);
 }
 
+// A convenience method taking a Redis-issued hash of `{ userId: stateInfo }` tuples
+// and turning it into a descending-score `Array` of `{ id: Number, score: Number }` tuples.
 function sortPlayerList(pairs) {
+  // This is a massive example of Underscore's power.  We let it operate in sequence on `pairs`,
+  // JSON-decoding values on the fly, map to proper tuples, and sort by a computed property.
+  // The equivalent JS code would take a fair number of lines…
   return _.chain(pairs)
     .map(function(rec, userId) {
       if (_.isString(rec))
@@ -425,6 +503,11 @@ function sortPlayerList(pairs) {
     .value();
 }
 
+// The engine code often passes methods of the `Engine` singleton as references
+// (as callbacks, or sequence items in `async.waterfall`, or other situations).  In
+// such situations, JS would **lose scope** (lose the expected meaning of `this` to make
+// it reference the global object).  So we ask Underscore to overwrite the necessary methods
+// with a pre-bound version of them, one that is inherently attached to the `Engine` instance.
 _.bindAll(Engine, 'computeStats', 'getUsers', 'handleAnswer', 'nextQuestion',
   'questionExpires', 'questionProgresses', 'updatePlayerScores');
 

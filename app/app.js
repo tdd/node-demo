@@ -63,7 +63,11 @@ require('./back')(app, 'middleware');
 require('./front')(app, 'middleware', server);
 require('./back')(app, 'routes');
 require('./front')(app, 'routes');
-require('./arduino');
+
+// If you have a proper Arduino board connected (check the annotated
+// source of the `arduino.js` module), uncomment that line to start
+// the module.
+// require('./arduino');
 
 // This actually launches the server by listening on the relevant port for
 // incoming HTTP connections.  The default port is 3000.

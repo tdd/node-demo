@@ -1,6 +1,5 @@
-/*
- * Backoffice sub-app for quiz management (quizzes and questions).
- */
+// Backoffice sub-app for quiz management
+// --------------------------------------
 
 var fs = require('fs');
 var passport = require('passport');
@@ -17,23 +16,29 @@ var localIP = require('../client/local_ip').localIP;
 module.exports = backOfficeApp;
 
 // Subapp setup
-// ============
+// ------------
 
+// This is the function this module exports.  Because Express will block
+// any further middleware once a route is registered, this behaves in two
+// modes: middleware (non-route) and route (non-middleware).  Calling it
+// without a mode (or with an invalid mode) does everything.
 function backOfficeApp(app, mode) {
+  // Middleware-only or generic context
   if ('routes' !== mode) {
     app.use('/admin', checkboxNormalizer);
 
-    // Subapp authentication (using a previously registered HTTP Basic strategy)
+    // Subapp authentication (using a previously registered HTTP Basic strategy,
+    // see the bottom of this file)
     app.use('/admin', passport.authenticate('basic', { session: false }));
 
-    // Subapp-local views
+    // Subapp-local view path
     app.use('/admin', function useLocalViews(req, res, next) {
       app.set('views', path.join(__dirname, 'views'));
       app.locals.localIP = localIP;
       next();
     });
 
-    // Subapp model checking
+    // Subapp model checking, so we have `req.quiz` whenever relevant.
     app.use('/admin/quizzes', function checkQuizModel(req, res, next) {
       var quizId = (req.url.match(/^\/(\d+)\b/) || [])[1];
       if (undefined === quizId)
@@ -52,6 +57,7 @@ function backOfficeApp(app, mode) {
     require('./questions')(app, 'middleware');
   }
 
+  // Routes-only or generic context
   if ('middleware' !== mode) {
     // Root access should redirect to the backoffice main page
     app.all('/admin', function(req, res) {
@@ -78,7 +84,7 @@ function backOfficeApp(app, mode) {
 }
 
 // Quiz resource actions
-// =====================
+// ---------------------
 
 // Action: create quiz
 function createQuiz(req, res) {
@@ -154,6 +160,9 @@ function newQuiz(req, res) {
 
 // Action: reorder quiz
 function reorderQuiz(req, res) {
+  // Sequelize’s `QueryChainer` lets us group DB calls together as a joint promise
+  // and use a single callback success.  We use that for all the position updates on
+  // our questions.
   var updateChain = new Sequelize.Utils.QueryChainer();
   req.body.ids.forEach(function(id, index) {
     updateChain.add(Question.QueryInterface.bulkUpdate(
@@ -184,6 +193,9 @@ function scoreboard(req, res) {
 // Action: start quiz
 function startQuiz(req, res) {
   engine.start().then(function() {
+    // `req.xhr` is true when the request was Ajax-made.  This is based on the
+    // `X-Requested-With` request header being set to `XMLHttpRequest`, which all
+    // major client-side JS libs (jQuery, Prototype, etc.) do.
     if (req.xhr) {
       res.send(200, 'Started');
     } else {
@@ -211,6 +223,7 @@ function updateQuiz(req, res) {
   });
 }
 
+// Convenience method to build proper breadcrumbs for the various views.
 function buildBreadcrumbs(quiz) {
   return [
     { url: '/admin/quizzes', label: 'Quizzes' },
@@ -219,12 +232,11 @@ function buildBreadcrumbs(quiz) {
 }
 
 // Backoffice authentication setup
-// ===============================
+// -------------------------------
 
 // Read credentials off a JSON file
 // in this file's directory and initialize a Passport HTTP Basic strategy
 // with those.
-
 function readCredentials(cb) {
   fs.readFile(path.join(__dirname, 'credentials.json'), function(err, json) {
     if (err)
@@ -240,6 +252,8 @@ function readCredentials(cb) {
   });
 }
 
+// Read the credentials then define an HTTP Basic (`'basic'`) strategy
+// the Passport authentication middleware can use (see above)
 readCredentials(function(user, password) {
   passport.use(new BasicStrategy(
     function(u, p, done) {

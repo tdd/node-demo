@@ -1,3 +1,6 @@
+// The Question model
+// ==================
+
 var db      = require('./db');
 var Quiz    = require('./quiz');
 var _       = require('underscore');
@@ -12,15 +15,13 @@ var Question = db.define('question', {
   visible:      { type: db.types.BOOLEAN, allowNull: false, defaultValue: true }
 }, {
   instanceMethods: {
+    // Helper method checking that a series of answer IDs turns out to be this question's
+    // correct answers (no requirement on the order)
     checkAnswers: function(ids) {
       this.correctIds = this.correctIds ||
         _.chain(this.answers || []).where({ correct: true }).pluck('id').value().sort();
 
       return _.isEqual(_.map(ids, Number).sort(), this.correctIds);
-    },
-
-    multiple: function multiple() {
-      return _.where(this.answers, { correct: true }).length > 1;
     },
 
     remainingTime: toolkit.remainingTime,
@@ -34,9 +35,11 @@ var Question = db.define('question', {
   }
 });
 
+// Relationships Quiz/Question that define accessors and finders.
 Quiz.hasMany(Question, { onDelete: 'cascade' });
 Question.belongsTo(Quiz);
 
+// Ensure the table exists in the DB
 Question.sync();
 
 module.exports = Question;

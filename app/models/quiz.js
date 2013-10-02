@@ -1,3 +1,6 @@
+// The Quiz model
+// ==============
+
 var db      = require('./db');
 var _       = require('underscore');
 
@@ -12,6 +15,7 @@ var Quiz = db.define('quiz', {
   visible:      { type: db.types.BOOLEAN, allowNull: false, defaultValue: false }
 }, {
   instanceMethods: {
+    // Helper method to get the next available position for a new question in a quiz
     getNextQuestionPosition: function getNextQuestionPosition() {
       return Quiz.daoFactoryManager.sequelize.getQueryInterface().rawSelect('questions', {
         attributes: [['MAX(position) + 1', 'maxPos']],
@@ -32,6 +36,7 @@ var Quiz = db.define('quiz', {
   }
 });
 
+// Ensure the table exists in the DB
 Quiz.sync();
 
 module.exports = Quiz;
