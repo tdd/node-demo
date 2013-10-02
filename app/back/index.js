@@ -174,7 +174,7 @@ function scoreboard(req, res) {
   engine.getLatestScoreboard(function(err, scoreboard) {
     if (err) throw err;
     res.render('scoreboard', {
-      board: scoreboard,
+      scoreboard: scoreboard,
       title: 'Derniers scores',
       breadcrumbs: buildBreadcrumbs('Derniers scores')
     });
