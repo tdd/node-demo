@@ -12,6 +12,14 @@ var Quiz = db.define('quiz', {
   visible:      { type: db.types.BOOLEAN, allowNull: false, defaultValue: false }
 }, {
   instanceMethods: {
+    getNextQuestionPosition: function getNextQuestionPosition() {
+      return Quiz.daoFactoryManager.sequelize.getQueryInterface().rawSelect('questions', {
+        attributes: [['MAX(position) + 1', 'maxPos']],
+        where: { quizId: this.id },
+        parseInt: true
+      }, 'maxPos');
+    },
+
     isCurrent: function isCurrent() {
       var engine = require('../engine');
       return engine.currentQuiz && engine.currentQuiz.id === this.id;

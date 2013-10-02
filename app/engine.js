@@ -182,6 +182,8 @@ var Engine = _.extend(new events.EventEmitter(), {
     var self = this;
     self.reset('quiz');
 
+    if (quizId.id)
+      quizId = quizId.id;
     return Quiz.find(quizId).success(function(quiz) {
       self.currentQuiz = quiz;
       log('info', 'Quiz inits: ' + quiz.title);
@@ -199,14 +201,15 @@ var Engine = _.extend(new events.EventEmitter(), {
     if (0 === this.startedAt)
       return;
 
-    var opts = { where: { visible: true }, order: 'position', limit: 1, include: [Answer] };
+    var opts = { where: { visible: true }, order: 'questions.position, answers.position',
+      limit: 1, include: [Answer] };
     if (this.questionIds) {
       if (!this.questionIds.length) {
         return this.wrapUp();
       }
       opts.where['questions.id'] = this.questionIds.shift();
     } else if (this.currentQuestion) {
-      opts.where.position = 'ge ' + this.currentQuestion.position;
+      opts.where['questions.position'] = { gt: this.currentQuestion.position };
     }
     var self = this;
 
@@ -227,6 +230,8 @@ var Engine = _.extend(new events.EventEmitter(), {
       } else {
         self.wrapUp();
       }
+    }).error(function(res) {
+      console.error('SQL ERROR:', res);
     });
   },
 

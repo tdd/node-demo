@@ -50,16 +50,17 @@ function questionsApp(app, mode) {
 function createQuestion(req, res) {
   var question = Question.build(req.body.question);
   question.quizId = req.quiz.id;
-  question.save()
-    .success(function() {
+  req.quiz.getNextQuestionPosition()
+    .then(function(nextPos) { question.position = nextPos; })
+    .then(function() { return question.save(); })
+    .then(function() {
       if (saveAnswers(question, req.body.answers)) {
         req.flash('success', 'La question « ' + question.title + ' » a bien été créée.');
         res.redirect("/admin/quizzes/" + req.quiz.id + "/edit?tab=questions");
       } else {
         res.send(500, 'Ooops');
       }
-    })
-    .error(function() {
+    }, function() {
       question.errors = _.extend.apply(_, arguments);
       res.render('questions/new', {
         answers: buildAnswers(req.body.answers),
