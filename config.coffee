@@ -1,7 +1,8 @@
 exports.config =
   # See https://github.com/brunch/brunch/blob/stable/docs/config.md for documentation.
   paths:
-    watched: ['app/client', 'app/back/client', 'app/front/client', 'app/front/views', 'vendor']
+    watched: ['app/assets', 'app/client', 'app/back/client',
+      'app/front/client', 'app/front/views', 'vendor']
     public: 'public'
   files:
     javascripts:
