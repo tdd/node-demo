@@ -1,3 +1,6 @@
+// The quiz running engine (business logic)
+// ========================================
+
 var Quiz      = require('./models/quiz');
 var Question  = require('./models/question');
 var Answer    = require('./models/answer');
@@ -9,8 +12,8 @@ var colors    = require('colors');
 var moment    = require('moment');
 var Promise   = require('promise');
 
-// The quiz running engine (business logic)
-// ========================================
+// Persistence keys in the Redis store
+// -----------------------------------
 
 var AUTH_PERSIST_KEY  = 'blend-demo:ips-to-users';
 var CUR_QUESTION_KEY  = 'blend-demo:current-question';
@@ -18,9 +21,14 @@ var PLAYERS_KEY       = 'blend-demo:players';
 var SCOREBOARD_KEY    = 'blend-demo:score-board';
 var USER_LIST_KEY     = 'blend-demo:users';
 
-var Engine = _.extend(new events.EventEmitter(), {
-  // State
+// The Engine singleton
+// --------------------
 
+// This contains all the business logic for running the quiz; other parts
+// of the app (admin pages and player-facing pages) end up calling its
+// methods, and it emits events for various stages of the game.
+
+var Engine = _.extend(new events.EventEmitter(), {
   currentQuiz: null,
   currentQuestion: null,
   currentQuestionExpiresAt: 0,
@@ -28,8 +36,14 @@ var Engine = _.extend(new events.EventEmitter(), {
   playerCount: 'Aucun joueur',
   startedAt: 0,
 
-  // Features
+  // Authentication middleware helper
+  // --------------------------------
 
+  // This is called by the front pages to try and get the currently-logged
+  // user back from the request's session or, failing that, from the
+  // Redis-backed IP-to-player mapping, so we don't have to re-auth with
+  // Twitter between two server starts.  This is especially useful during
+  // dev, when the server auto-restarts at every code change.
   checkAuth: function(req, res, next) {
     var user = req.user;
     var self = this;
@@ -42,10 +56,19 @@ var Engine = _.extend(new events.EventEmitter(), {
 
     function handleUser(user) {
       var json = JSON.stringify(user), origScore;
+      // Notice the use of [`async.waterfall`](https://github.com/caolan/async#waterfall)
+      // here.  We make heavy use of that trick to chain multiple traditional (non-promise)
+      // async call whose results feed into each other (at least for some of the calls).
+      // This is one way of avoiding the “Pyramid of Doom” effect.
       async.waterfall([
+        // 1: persist the current user in the IP-to-player map
         function(cb)        { redis.hset(AUTH_PERSIST_KEY, req.ip, json, cb); },
+        // 3. persist the current user in the players-scored-by-join-time sorted set.
+        // Use their existing score, if any, to avoid bumping them to the end of the
+        // list once they've joined in.
         function(foo, cb)   { redis.zscore(USER_LIST_KEY, json, cb); },
         function(score, cb) { redis.zadd(USER_LIST_KEY, (origScore = score) || Date.now(), json, cb); },
+        // 4. Check the amount of players to maintain our `playerCount` textual state.
         function(foo, cb)   { redis.zcard(USER_LIST_KEY, cb); },
         function(count, cb) {
           self.playerCount = count <= 0 ? 'Aucun joueur' : (1 == count ? 'Un joueur' : count + ' joueurs');
@@ -53,10 +76,14 @@ var Engine = _.extend(new events.EventEmitter(), {
             self.emit('quiz-join', user, self.playerCount);
           cb();
         },
+        // This is a middleware: don't forget to pass on control to the
+        // remainder of the stack once we're done.
         next
       ]);
     }
 
+    // Tiny callback when our user wasn't found in the session and we looked
+    // them up in the Redis store.
     function handleRedisUser(err, json) {
       if (!json)
         res.redirect(302, '/front/auth');
@@ -67,14 +94,30 @@ var Engine = _.extend(new events.EventEmitter(), {
     }
   },
 
+  // Scoreboard computation on quiz end
+  // ----------------------------------
+
+  // This computes the final scoreboard for the quiz once it's done,
+  // and persists it into Redis so we can call it up whenever we want.
+  // This sorts players by descending total score.  Ex-aequos are still
+  // ranked separately (just being lazy here) in no particular order
+  // amongst them.
   computeScoreboard: function computeScoreboard(cb) {
     var self = this, players;
+    // `async.waterfall` again, as we have a number of async steps
+    // feeding into each other.
     async.waterfall([
+      // 1. Get the entire current-quiz players list.
       function(cb) { redis.hgetall(PLAYERS_KEY, cb); },
+      // 2. Turn the resulting list into an ID+score tuple list
+      // sorted by descending score.
       function(list, cb) {
         players = sortPlayerList(list);
         cb();
       },
+      // 3. Grab the full user/player list and extend the sorted
+      // user-ID list with full properties from it (name, avatar URL).
+      // Also, persist the resulting scoreboard in Redis.
       this.getUsers,
       function(users, cb) {
         _.each(players, function(p, i) {
@@ -83,13 +126,32 @@ var Engine = _.extend(new events.EventEmitter(), {
         });
         redis.set(SCOREBOARD_KEY, JSON.stringify(players), cb);
       },
+      // 4. Time to call the callback that was passed to us.  We
+      // obey the Node convention of error first, data later, which
+      // lets any other Node-assuming system, including `async`,
+      // manipulate this very method with confidence.
       function() { cb(null, players); }
     ]);
   },
 
+  // Stats computation on question end
+  // ---------------------------------
+
+  // When a question is done, we compute basic stats about it: what
+  // the correct answers were, what percentages of answering players
+  // selected each answer, what the overall correct answers ratio was,
+  // and who the current leading players are.  All percentages are
+  // rounded to the nearest integer.
   computeStats: function computeStats(pairs, cb) {
+    // Gotta love Underscore. `_.pluck` grabs the same property out of
+    // every iterable.  This is an optimized special case of `map`, just
+    // like `_.invoke` would be for method calls.
     var correctStatuses = _.pluck(this.currentQuestion.answers, 'correct');
 
+    // For every answer, determine how many players selected it.  Players
+    // can select multiple answers.  This is based on the final state of
+    // play once the question has timed out, as players can adjust their
+    // answers until then.
     var answerSpreads = {};
     _.each(pairs, function(record) {
       record.answerIds.forEach(function(id) {
@@ -97,30 +159,44 @@ var Engine = _.extend(new events.EventEmitter(), {
         answerSpreads[id] = (answerSpreads[id] || 0) + 1;
       });
     });
-    var playerCount = _.size(pairs);
+
+    // Turn that list of raw counters into count+percentage pairs.  If no
+    // player participated we'll get a weird rounding due to 0/0, so let's
+    // workaround this by setting a floor of 1.
+    var playerCount = Math.max(_.size(pairs), 1);
     answerSpreads = this.currentQuestion.answers.map(function(a) {
       var count = answerSpreads[a.id] || 0;
       return { count: count, percent: Math.round(count * 100 / playerCount) };
     });
 
+    // Determine overall counts (and %) of fully-correct players
     var correctCount = _.where(pairs, { currentQuestionCorrect: true }).length;
     var correctPercent = Math.round(correctCount * 100 / playerCount);
 
+    // Get the top 5 scores, and pick 10 random players inside that score range to
+    // report as the currently-leading players.
     var sortedPlayers = sortPlayerList(pairs);
     var minimumScore = sortedPlayers.length ? Math.max(sortedPlayers[0].score - 4, 1) : 1;
     var top5Candidates = _.filter(sortedPlayers, function(p) { return p.score >= minimumScore; });
     var random10BestIds = _.chain(top5Candidates).sample(10).pluck('id').value();
     var random10Bests;
 
+    // Again, `async.waterfall` lets us "chain" asynchronous operations without falling
+    // into the Pyramid of Doom trap.
     async.waterfall([
+      // 1. We have 10 user IDs: grab all users and map IDs to actual users.
       this.getUsers,
       function(users, cb) {
         random10Bests = _.filter(users, function(u) { return _.contains(random10BestIds, u.id); });
         cb();
       },
+      // 2. Compute a textual representation and log it using our theme's debug color
+      // (see below)
       function(cb) {
         var str = 'Answers: ';
         _.each(answerSpreads, function(spread, index) {
+          // Question indices are turned into letters (A, B, etc.).  Correct answers
+          // are suffixed with a star.
           str += String.fromCharCode(index + 65);
           str += (correctStatuses[index] ? '*' : ' ');
           str += ': ' + spread.count + ' (' + spread.percent + '%)';
@@ -132,6 +208,8 @@ var Engine = _.extend(new events.EventEmitter(), {
         log('debug', 'Random 10 Best: ' + _.pluck(random10Bests, 'name').join(', '));
         cb();
       },
+      // 3. Finally, invoke our passed callback with all proper stats.  We obey Node's
+      // callback style (error, data…).
       function() {
         cb(null, {
           correctCount: correctCount,
@@ -144,6 +222,7 @@ var Engine = _.extend(new events.EventEmitter(), {
     ]);
   },
 
+  // Just an accessor to gain access to the latest scoreboard, thanks to Redis storage.
   getLatestScoreboard: function getLatestScoreboard(cb) {
     redis.get(SCOREBOARD_KEY, function(err, json) {
       if (err) throw err;
@@ -151,12 +230,19 @@ var Engine = _.extend(new events.EventEmitter(), {
     });
   },
 
+  // A simple accessor to get the full list of players, least-recent first.  Note that
+  // we let Redis maintain that sort order for us as we store in a sorted set with scores
+  // based on join time.
   getUsers: function getUsers(cb) {
     redis.zrangebyscore(USER_LIST_KEY, 0, +Infinity, function(err, users) {
       cb(null, _.map(users, JSON.parse));
     });
   },
 
+  // Entry point for answers by players.  The passed `answer` is expected to be of
+  // the shape `{ userId: Number, answerIds: [Number…] }`.  This creates/updates
+  // this player's answer to the current question, persisting it in Redis so it survives
+  // server restarts.
   handleAnswer: function handleAnswer(answer) {
     if (!this.isRunning())
       return;

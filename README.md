@@ -9,14 +9,15 @@ npm install -g
 blend-demo
 ```
 
-FIXME synopsis
-
+The detailed README for this demo is not written yet, and the source
+code doesn't yet include full commenting (hence Docco-generated docs)
+and examples of both unit and integration tests, with Travis integration.
+This is coming, watch the Github repo for updates!
 
 DESCRIPTION
 -----------
 
-FIXME description
-
+Coming soon.
 
 OPTIONS
 -------
