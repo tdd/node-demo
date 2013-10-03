@@ -92,11 +92,10 @@ man blend-demo
 
 The CLI wrapper for this tool, `blend-demo`, accepts a couple options:
 
-* -i, --auto-init QUIZ_ID
-  Sets the output format. Outputs html if different from `roff`.
-  Defaults to `roff`.
+* `-i`, `--auto-init` *QUIZ_ID*
+  Auto-inits an existing quiz based on its database ID.
 
-* -h, --help
+* `-h`, `--help`
   Displays usage.
 
 
