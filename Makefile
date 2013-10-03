@@ -1,7 +1,8 @@
-all: install doc start
+all: install start
 
 install:
-	npm install
+	@npm install
+	@brunch b
 	@echo 'Configure your app/back/credentials.json and app/front/credentials.json.'
 	@echo 'Then you can start'
 
@@ -19,6 +20,9 @@ doc:
 
 	@echo "Docc’ing the core…"
 	@docco app{,/client,/models}/*.{js,coffee} config.coffee
+
+	@echo "Building the MAN page…"
+	@./node_modules/marked-man/bin/marked-man README.md > docs/blend-demo.1
 
 start:
 	npm start

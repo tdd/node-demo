@@ -41,14 +41,14 @@
   "readmeFilename": "README.md",
   "scripts": {
     "start": "nodemon --debug --watch app --ext js app/app.js",
-    "test": "mocha"
+    "test": "mocha -R spec"
   },
   "repository": {
     "type": "git",
     "url": "git@github.com:tdd/blend-demo.git"
   },
   "bin": ".bin/blend-demo",
-  "man": "docs/blend-demo.man.1",
+  "man": "docs/blend-demo.1",
   "keywords": [
     "demo",
     "blend",
@@ -58,7 +58,7 @@
     "websockets",
     "redis"
   ],
-  "author": "Christophe Porteneuve",
+  "author": "Christophe Porteneuve <christophe@delicious-insights.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/tdd/blend-demo/issues"
