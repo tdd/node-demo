@@ -27,7 +27,7 @@ app.use(express.logger(app.get('env') === 'development' ? 'dev' : 'default'));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
-app.use(express.cookieParser('I can haz BLEND demo!'));
+app.use(express.cookieParser('I can haz FranceJS demo!'));
 app.use(express.session());
 // This is not Adobe's Flash!  This is session flashes--messages that are
 // only retained until the next view rendered for the session.
@@ -46,7 +46,7 @@ app.use(function(req, res, next) {
 });
 
 // Shared locals for all views
-app.locals.title = "BLEND Quiz";
+app.locals.title = "FranceJS Quiz";
 
 // Development-only configuration (full error logging)
 app.configure('development', function() {
