@@ -3,7 +3,7 @@ include mixins
 - question.errors = question.errors || {}
 .form-group(class=(question.errors.title ? 'has-error' : null))
   label(for="title") Titre
-  input#title.form-control(type="text", name="question[title]", value=question.title)
+  input#title.form-control(type="text", name="question[title]", value=question.title, autofocus)
   if question.errors.title
     .help-block= question.errors.title.join(', ')
 .form-group

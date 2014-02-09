@@ -1,5 +1,7 @@
-// The app entry point
-// ===================
+// App entry point
+// ===============
+
+'use strict';
 
 // Requiring this module runs the app.  It is, for instance, required
 // by the CLI interface (`.bin/blend-demo`) when it is done setting up.
@@ -27,8 +29,8 @@ app.use(express.logger(app.get('env') === 'development' ? 'dev' : 'default'));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
-app.use(express.cookieParser('I can haz FranceJS demo!'));
-app.use(express.session());
+app.use(express.cookieParser('I can haz JS Quiz!'));
+app.use(express.cookieSession());
 // This is not Adobe's Flash!  This is session flashes--messages that are
 // only retained until the next view rendered for the session.
 app.use(flash());
@@ -46,7 +48,8 @@ app.use(function(req, res, next) {
 });
 
 // Shared locals for all views
-app.locals.title = "FranceJS Quiz";
+app.locals.title = "Node Demo @ tech·days 2014";
+app.locals.marked = require('marked');
 
 // Development-only configuration (full error logging)
 app.configure('development', function() {

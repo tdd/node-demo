@@ -1,0 +1,65 @@
+<!DOCTYPE html><html lang="en"><head><title>app/back/views/index</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../../../"><meta name="groc-document-path" content="app/back/views/index"><meta name="groc-project-path" content="app/back/views/index.jade"><link rel="stylesheet" type="text/css" media="all" href="../../../assets/style.css"><script type="text/javascript" src="../../../assets/behavior.js"></script><body><div id="meta"><div class="file-path">app/back/views/index.jade</div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="nt">extends</span> layout
+<span class="nt">include</span> ../../mixins
+<span class="nt">include</span> mixins
+
+<span class="nt">block</span> content
+  <span class="nt">p</span>
+    <span class="nt">a</span><span class="nc">.btn.btn-lg.btn-primary</span>(<span class="na">href=</span><span class="s">&quot;/admin/quizzes/new&quot;</span>)
+      <span class="err">+</span><span class="nt">icon</span>(<span class="err">&#39;</span><span class="na">plus</span><span class="err">&#39;</span>)
+      <span class="err">&amp;</span><span class="nt">nbsp</span>;
+      | Créer un quiz
+
+  <span class="nt">if</span> quizzes.length
+    <span class="nt">table</span><span class="nc">.table.table-striped</span>
+      <span class="nt">thead</span>
+        <span class="nt">tr</span>
+          <span class="nt">th</span> Quiz
+          <span class="nt">th</span> Difficulté
+          <span class="nt">th</span> Ordre
+          <span class="nt">th</span> Questions
+          <span class="nt">th</span>
+      <span class="nt">tbody</span>
+        <span class="nt">each</span> quiz in quizzes
+          <span class="nt">tr</span>
+            <span class="nt">td</span>
+              <span class="err">+</span><span class="nt">icon</span>(<span class="na">quiz</span><span class="err">.</span><span class="na">visible</span> <span class="err">?</span> <span class="err">&#39;</span><span class="na">eye-open</span><span class="err">&#39;</span> <span class="na">:</span> <span class="err">&#39;</span><span class="na">eye-close</span><span class="err">&#39;,</span> <span class="err">&#39;</span><span class="na">text-muted</span><span class="err">&#39;</span>)
+              <span class="err">&amp;</span><span class="nt">nbsp</span>;
+              <span class="nt">a</span>(<span class="na">href=</span><span class="s">&quot;/admin/quizzes/#{quiz.id}/edit&quot;</span>)
+                <span class="err">+</span><span class="nt">icon</span>(<span class="err">&#39;</span><span class="na">pencil</span><span class="err">&#39;</span>)
+                <span class="err">&amp;</span><span class="nt">nbsp</span>;
+                <span class="err">= </span><span class="nt">quiz</span><span class="nc">.title</span>
+              <span class="nt">if</span> quiz.description
+                <span class="nt">br</span>
+                <span class="nt">small</span><span class="nc">.text-muted</span><span class="p">=</span> <span class="n">quiz</span><span class="o">.</span><span class="n">description</span>
+            <span class="nt">td</span>
+              <span class="err">+</span><span class="nt">starred_level</span>(<span class="na">quiz</span>)
+            <span class="nt">td</span>
+              <span class="err">+</span><span class="nt">running_mode</span>(<span class="na">quiz</span>)
+            <span class="nt">td</span>
+              <span class="err">= </span><span class="nt">counters</span><span class="o">[</span><span class="kt">quiz.id</span><span class="o">]</span> || 0
+              <span class="err">&amp;</span><span class="nt">nbsp</span>;
+              <span class="nt">if</span> quiz.isCurrent()
+                <span class="nt">p</span><span class="nc">.start-notice.text-muted</span>(<span class="na">style=</span><span class="err">(</span><span class="nv">quiz</span><span class="err">.</span><span class="na">isStarted</span><span class="err">(</span>) ? &#39;&#39; : &#39;display: none&#39;)) Le quiz est en cours&amp;hellip;
+                <span class="nt">form</span>(<span class="na">method=</span><span class="s">&quot;post&quot;</span><span class="err">,</span> <span class="na">action=</span><span class="s">&quot;/admin/quizzes/#{quiz.id}/start&quot;</span><span class="err">,</span> <span class="na">style=</span><span class="s">&quot;display: inline&quot;</span><span class="err">,</span> <span class="err">&#39;</span><span class="na">data-action</span><span class="err">&#39;=&quot;</span><span class="na">start</span><span class="err">&quot;</span>)
+                  <span class="nt">input</span>(<span class="na">type=</span><span class="s">&quot;hidden&quot;</span><span class="err">,</span> <span class="na">name=</span><span class="s">&quot;_method&quot;</span><span class="err">,</span> <span class="na">value=</span><span class="s">&quot;put&quot;</span>)
+                  <span class="nt">button</span><span class="nc">.btn.btn-success.btn-xs</span>(<span class="na">type=</span><span class="s">&quot;submit&quot;</span>)
+                    <span class="err">+</span><span class="nt">icon</span>(<span class="err">&#39;</span><span class="na">flash</span><span class="err">&#39;</span>)
+                    |  (Re)démarrer !
+                  <span class="nf">#currentPlayers</span><span class="nc">.text-muted</span><span class="p">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">playerCount</span>
+              <span class="nt">else</span> if counters[quiz.id] &gt; 0
+                <span class="nt">form</span>(<span class="na">method=</span><span class="s">&quot;post&quot;</span><span class="err">,</span> <span class="na">action=</span><span class="s">&quot;/admin/quizzes/#{quiz.id}/init&quot;</span><span class="err">,</span> <span class="na">style=</span><span class="s">&quot;display: inline&quot;</span>)
+                  <span class="nt">input</span>(<span class="na">type=</span><span class="s">&quot;hidden&quot;</span><span class="err">,</span> <span class="na">name=</span><span class="s">&quot;_method&quot;</span><span class="err">,</span> <span class="na">value=</span><span class="s">&quot;put&quot;</span>)
+                  <span class="nt">button</span><span class="nc">.btn.btn-success.btn-xs</span>(<span class="na">type=</span><span class="s">&quot;submit&quot;</span>)
+                    <span class="err">+</span><span class="nt">icon</span>(<span class="err">&#39;</span><span class="na">ok</span><span class="err">&#39;</span>)
+                    |  Activer
+            <span class="nt">td</span>
+              <span class="nt">form</span>(<span class="na">method=</span><span class="s">&quot;post&quot;</span><span class="err">,</span> <span class="na">action=</span><span class="s">&quot;/admin/quizzes/#{quiz.id}&quot;</span>)
+                <span class="nt">input</span>(<span class="na">type=</span><span class="s">&quot;hidden&quot;</span><span class="err">,</span> <span class="na">name=</span><span class="s">&quot;_method&quot;</span><span class="err">,</span> <span class="na">value=</span><span class="s">&quot;delete&quot;</span>)
+                <span class="nt">button</span><span class="nc">.btn.btn-danger.btn-xs</span>(<span class="na">type=</span><span class="s">&quot;submit&quot;</span>)
+                  <span class="err">+</span><span class="nt">icon</span>(<span class="err">&#39;</span><span class="na">trash</span><span class="err">&#39;</span>)
+                  <span class="err">&amp;</span><span class="nt">nbsp</span>;
+                  | Supprimer
+
+    <span class="nt">ul</span><span class="nf">#currentAnswers</span><span class="nc">.list-unstyled</span>
+    <span class="nf">#countDown</span>(<span class="na">style=</span><span class="s">&quot;display: none&quot;</span>)
+    <span class="nf">#feedback</span></div></div></div></div></body></html>

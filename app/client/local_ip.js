@@ -1,3 +1,6 @@
+// Isomorphic helper: local IP
+// ===========================
+
 // Just a core service that provides the local IP for the current
 // machine, trying for external (non-loopback) IPv4 addresses first.
 

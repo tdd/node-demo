@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="fr">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Tour d’horizon de NodeJS • Christophe Porteneuve à tech·days 2014</title>
+
+    <meta name="description" content="Node révolutionne depuis déjà plusieurs années la couche serveur.  Cette présentation repose les fondamentaux, illustre l'écosystème avec une démo et s'aventure même dans le matériel.">
+    <meta name="author" content="Christophe Porteneuve">
+    <meta name="copyright" content="© 2013–2014 Christophe Porteneuve.  Disponible sous licence http://creativecommons.org/licenses/by-nc-sa/3.0/fr/">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/sky.css" id="theme">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/tomorrow.css">
+
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+      document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div id="nodeLogo"></div>
+
+    <div class="reveal">
+
+      <!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+
+        <section>
+          <h1>NodeJS</h1>
+          <h3>Tour d’horizon</h3>
+          <p>
+            <small>
+              <a href="http://tddsworld.com">Christophe Porteneuve</a>
+              à <a href="http://www.microsoft.com/france/mstechdays/">tech·days 2014</a>
+            </small>
+          </p>
+        </section>
+
+        <section>
+          <h1>Salut</h1>
+          <h2>Moi c’est Christophe</h2>
+
+          <p><a href="http://www.js-attitude.fr/" target="_blank">JS Attitude</a>, <a href="http://www.git-attitude.fr/" target="_blank">Git Attitude</a>…</p>
+          <p>Paris Web, toussa…</p>
+          <p><a href="https://twitter.com/porteneuve" target="_blank">@porteneuve</a></p>
+        </section>
+
+        <section>
+          <h1>Pourquoi Node ?</h1>
+
+          <p class="fragment">
+            JS === <strong>langage n°1</strong>
+            (<a target="_blank" href="https://github.com/search?q=stars%3A%3E%3D0&amp;type=Repositories&amp;ref=searchresults">si</a>) (<a target="_blank" href="http://techcrunch.com/2012/09/12/javascript-tops-latest-programming-language-popularity-ranking-from-redmonk/">si, si</a>)
+          </p>
+          <p class="fragment">Langage extrêmement <strong>puissant</strong> + en forte évolution</p>
+          <p class="fragment">Changement de modèle I/O pour <strong>plus de performance</strong></p>
+          <p class="fragment"><strong>Léger</strong> mais ultra-rapide</p>
+          <p class="fragment"><strong>Capitalisation</strong> des compétences</p>
+          <p class="fragment"><strong>Que du bonheur :-)</strong></p>
+        </section>
+
+        <section>
+          <h1>2009–2014</h1>
+
+          <ol>
+            <li class="fragment">11/2009 : annonce officielle (Ryan Dahl @ JSConf.EU)</li>
+            <li class="fragment">06/2010 : <a href="https://www.nodejitsu.com/">Nodejitsu</a></li>
+            <li class="fragment">11/2010 : <a href="http://expressjs.com/">Express</a> 1.0</li>
+            <li class="fragment">05/2011 : <a href="https://npmjs.org/">npm</a> 1.0</li>
+            <li class="fragment">12/2011 : Azure <a href="http://www.windowsazure.com/en-us/develop/nodejs/">prend en charge Node.js</a></li>
+            <li class="fragment">2013 : déferlante de <a href="http://strongloop.com/node-republic/node-js-infographic/">gros usages en production</a> (eBay, PayPal, LinkedIn, Walmart, IBM…).  <a href="https://nodejstools.codeplex.com/">Support officiel dans Visual Studio</a>.</li>
+            <li class="fragment">Aujourd’hui : 58K+ modules dans npm, Top-5 PaaS, conférences JS/Node pratiquement toutes les semaines.</li>
+          </ol>
+        </section>
+
+        <section>
+          <h1>Node en prod</h1>
+
+          <p>Nombreux très gros sites et systèmes basés sur Node</p>
+          <p>
+            <strong>eBay</strong> (<a href="http://ql.io">ql.io</a>, <a href="http://www.technology-ebay.de/the-teams/mobile-de/blog/deploying-node-applications-with-capistrano-github-nginx-and-upstart.html">1</a>),
+            <strong>LinkedIn</strong>
+              (<a href="http://venturebeat.com/2011/08/16/linkedin-node/">1</a>,
+               <a href="http://www.infoq.com/fr/news/2013/05/Ruby-on-Rails-Node-js-LinkedIn">2</a>,
+               <a href="http://www.greenit.fr/article/bonnes-pratiques/eco-conception-logicielle-10-fois-moins-de-serveurs-pour-linkedin-4783">3</a>,
+               <a href="http://engineering.linkedin.com/tags/nodejs">4</a>),
+            <strong>PayPal</strong> (<a href="http://www.nearform.com/nodecrunch/release-the-kracken-how-paypal-is-being-revolutionized-by-node-js-and-lean-ux">Kraken</a>),
+            <br>
+            <strong>IBM</strong> (<a href="http://webcache.googleusercontent.com/search?q=cache:J3mPEaI1cDsJ:www.ibm.com/developerworks/java/library/mo-nodejs-1/index.html%3Fca%253Ddrs-+&cd=2&hl=fr&ct=clnk&gl=fr">Mobile platform</a>),
+            <strong>Airbnb</strong> (<a href="http://nerds.airbnb.com/isomorphic-javascript-future-web-apps/">1</a>),
+            <strong>Uber</strong>,
+            <strong>MySpace</strong>,
+            <strong>Mozilla</strong> (Persona),
+            <small>Klout,
+            Yahoo! (Manhattan, Mojito, Cocktails…),
+            Dow Jones,
+            New York Times (parties),
+            BBC (cœur),
+            Transloadit,
+            Iris Couch,
+            Segment.io
+            Apiary.io…</small>
+          </p>
+          <p>Sans oublier une bonne partie du BaaS <a href="http://www.windowsazure.com/fr-fr/services/mobile-services/">Azure Mobile Services</a>…</p>
+          <p>Développement sponsorisé par Joyent.  Formation et consulting haut de gamme initiés par The Node Firm.</p>
+          <p>En fait, <a href="http://strongloop.com/node-republic/node-js-infographic/">regardez ça, ça calme</a>.</p>
+        </section>
+
+        <section>
+          <h1>Hébergement</h1>
+
+          <p>Aucun souci sur du dédié, évidemment.</p>
+
+          <p>Pour du PaaS, on a l’embarras du choix :</p>
+
+          <p>Joyent, Nodejitsu, Heroku, EngineYard, Azure, StrongLoop et plein d’autres…</p>
+        </section>
+
+        <section>
+          <h1>Écosystème</h1>
+          <h3>riche et vivant</h3>
+
+          <p>58K+ modules dans npm (~ +155/jour, <a href="http://modulecounts.com/">leader</a>)</p>
+          <p>~5M downloads/jour</p>
+        </section>
+
+        <section>
+          <section>
+            <h1>Les grandes lignes</h1>
+          </section>
+
+          <section>
+            <h1>Evented</h1>
+
+            <p>JavaScript reste intrinsèquement <strong>mono-thread</strong></p>
+            <p><small>(on a plein d’options pour exploiter le multi-core, ceci dit)</small></p>
+            <p>Boucle d’événements + code asynchrone</p>
+            <p>Montée en charge bien supérieure à du multi-thread : <strong>à partir d’un haut niveau de concurrence (milliers de connexions), un serveur asynchrone non-bloquant « gagne » forcément.</strong></p>
+
+          </section>
+
+          <section>
+            <h1>Flux</h1>
+
+            <p>Le cœur de Node, c’est de l’opti d’I/O</p>
+            <p>Réseau, FileSystem, etc.</p>
+            <p>Infra riche et puissante de flux</p>
+            <p>Binaire/texte (UTF-8 &amp; cie), buffer/direct…</p>
+            <p>Pipes, backpressure, etc.  Composable, surpuissant.</p>
+          </section>
+
+          <section>
+            <h1>CommonJS</h1>
+
+            <p>Avec Node, <strong>tout fichier est un module isolé</strong>.</p>
+            <p>Dépendances explicites synchrones avec <code>require('…')</code></p>
+            <p>Enfin du code structuré, modulaire, découpé…</p>
+            <p>Ça + chemins intelligents = la fête</p>
+          </section>
+
+          <section>
+            <h1>Explicite</h1>
+
+            <p>Pas de scope magique, d’identifiants inattendus, etc.</p>
+            <p>À la base, explicite partout plutôt que CoC</p>
+            <p>Du besoin de require au design des API et modules majeurs</p>
+            <p>Prise en main moins dure pour les nouveaux : moins besoin de fouiller dans une tonne de docs et conventions, pas d’effet de surprise.</p>
+          </section>
+
+          <section>
+            <h1>Petits modules ciblés</h1>
+
+            <p><strong>Philosophie Unix</strong></p>
+            <p>Faire une seule chose et la faire bien</p>
+            <p>Composition pour traiter des besoins riches</p>
+            <p>Certains modules npm tiennent en une fonction !</p>
+          </section>
+        </section>
+
+        <section>
+          <h1>Démo</h1>
+        </section>
+
+        <section>
+          <h1>Apprendre</h1>
+
+          <p><a href="http://nodeschool.io/">Node School</a></p>
+          <p><a href="https://github.com/substack/stream-handbook">Stream Handbook</a></p>
+          <p><a href="http://nodestreams.com/">Nodestreams</a></p>
+          <p><a href="https://www.codeschool.com/courses/real-time-web-with-nodejs">CodeSchool</a></p>
+          <p><a href="http://howtonode.org/">How To Node?</a></p>
+          <p><a href="http://nodejs.org/api/">Docs officielles</a></p>
+
+          <div class="fragment">
+            <h4>Et bien sûr…</h4>
+
+            <p><small><em>(Obligatory shameless plug)</em></small></p>
+
+            <p><a href="http://www.js-attitude.fr/node-js">Formation Node.js chez JS Attitude</a></p>
+          </div>
+        </section>
+
+        <section>
+          <h1>Merci !</h1>
+
+          <p><a href="https://twitter.com/porteneuve">@porteneuve</a></p>
+          <p><a href="http://www.js-attitude.fr/">JS Attitude</a></p>
+          <p class="link"><a href="http://delicious-insights.com/francejs-node">http://delicious-insights.com/techdays-node</a></p>
+          <p class="link"><a href="https://github.com/tdd/blend-demo">https://github.com/tdd/node-demo</a></p>
+        </section>
+      </div>
+
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+
+    <script>
+
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          // { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          // { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+          // { src: 'plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } }
+          // { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+      });
+
+    </script>
+
+  </body>
+</html>

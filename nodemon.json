@@ -1,0 +1,10 @@
+{
+  "verbose": false,
+  "ignore": [
+    ".gitignore", ".git", ".jshintrc", "*.json",
+    "*.jade",
+    "app/assets", "app/back/client", "app/front/client",
+    "node_modules", "public", "test", "vendor"
+  ],
+  "watch": "*.js"
+}

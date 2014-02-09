@@ -1,4 +1,4 @@
-// Arduino module
+// Arduino bridge
 // ==============
 
 // Simply requiring this module lets us control an Arduino-driven
@@ -7,7 +7,7 @@
 // on it, cabled to a circuit or breadboard as described in
 // [this diagram](./blend-demo-arduino.png).
 
-var colors = require('colors');
+require('colors');
 var engine = require('./engine');
 // Johnny-Five is the high-level JS interface to the `firmata` module, which
 // itself relies on the `serialport` module to communicate over USB to the
@@ -18,7 +18,7 @@ var _      = require('underscore');
 var lcd, green, yellow, red;
 
 // Connect to the board; do not attempt to setup a REPL.
-board = new five.Board({ repl: false });
+var board = new five.Board({ repl: false });
 board.on('ready', function() {
   console.log('Arduino board ready'.debug);
 
@@ -85,7 +85,7 @@ function bindToEngine() {
     led.on();
   });
 
-  engine.on('quiz-end', function(scoreboard) {
+  engine.on('quiz-end', function() {
     lcd.clear().cursor(0, 0).print('Quiz done!');
     clearLEDs();
   });

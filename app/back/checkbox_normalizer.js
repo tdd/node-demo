@@ -1,3 +1,6 @@
+// Serialized checkbox normalizer
+// ==============================
+
 // Hidden/Checkbox serialization of checkboxes, turn these into booleans.
 // This is intended for use as a Connect/Express middleware.
 

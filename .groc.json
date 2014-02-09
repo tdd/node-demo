@@ -1,0 +1,11 @@
+{
+  "glob": [
+    "app/**/*.js",
+    "app/**/*.coffee",
+    "app/**/*.jade",
+
+    "config.coffee"
+  ],
+  "github": false,
+  "strip": "--no-strip"
+}

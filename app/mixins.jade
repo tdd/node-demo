@@ -1,10 +1,15 @@
-//- The `icon` mixin lets us put out a Bootstrap3 icon with all the proper classes.
-//- e.g. use `+icon('star')` in your views (or other mixins).
+//- Shared view mixins
+//- ==================
+
+//-
+  The `icon` mixin lets us put out a Bootstrap3 icon with all the proper classes.
+  e.g. use `+icon('star')` in your views (or other mixins).
 mixin icon(kind, classes)
   i.glyphicon(class="glyphicon-#{kind} #{classes || ''}")
 
-//- The `starred_level` mixin renders a quiz’s difficulty level (a positive number)
-//- as the relevant number of stars, using Bootstrap3 star icons.
+//-
+  The `starred_level` mixin renders a quiz’s difficulty level (a positive number)
+  as the relevant number of stars, using Bootstrap3 star icons.
 mixin starred_level(quiz)
   - for (var i = 0; i < quiz.level; ++i)
     +icon('star')

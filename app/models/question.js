@@ -1,5 +1,7 @@
-// The Question model
-// ==================
+// Question model
+// ==============
+
+'use strict';
 
 var db      = require('./db');
 var Quiz    = require('./quiz');
@@ -8,7 +10,7 @@ var toolkit = require('../client/toolkit');
 
 var Question = db.define('question', {
   title:        { type: db.types.STRING, allowNull: false, validate: { notEmpty: true } },
-  duration:     { type: db.types.INTEGER, allowNull: false, defaultValue: 15,
+  duration:     { type: db.types.INTEGER, allowNull: false, defaultValue: 20,
                   validate: { min: 5, max: 300 } },
   position:     { type: db.types.INTEGER, allowNull: false, defaultValue: 1,
                   validate: { min: 1 } },

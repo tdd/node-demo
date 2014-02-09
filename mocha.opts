@@ -1,0 +1,6 @@
+# Configuration de [mocha](http://visionmedia.github.io/mocha/)
+# =============================================================
+
+--reporter spec
+--watch
+--growl

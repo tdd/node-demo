@@ -3,4 +3,5 @@ npm-debug.log
 public
 credentials.json
 blend-demo.db
+node-demo.db
 docs/public

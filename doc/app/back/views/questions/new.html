@@ -1,0 +1,7 @@
+<!DOCTYPE html><html lang="en"><head><title>app/back/views/questions/new</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../../../../"><meta name="groc-document-path" content="app/back/views/questions/new"><meta name="groc-project-path" content="app/back/views/questions/new.jade"><link rel="stylesheet" type="text/css" media="all" href="../../../../assets/style.css"><script type="text/javascript" src="../../../../assets/behavior.js"></script><body><div id="meta"><div class="file-path">app/back/views/questions/new.jade</div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="nt">extends</span> ../layout
+<span class="nt">include</span> ../../../mixins
+
+<span class="nt">block</span> content
+  <span class="nt">form</span>(<span class="na">method=</span><span class="s">&quot;post&quot;</span><span class="err">,</span> <span class="na">action=</span><span class="s">&quot;/admin/quizzes/#{quiz.id}/questions&quot;</span>)
+    <span class="nt">include</span> _form
+    <span class="nt">button</span><span class="nc">.btn.btn-primary.btn-lg</span>(<span class="na">type=</span><span class="s">&quot;submit&quot;</span>) Ajouter la question</div></div></div></div></body></html>

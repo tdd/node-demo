@@ -1,0 +1,21 @@
+<!DOCTYPE html><html lang="en"><head><title>app/back/views/layout</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../../../"><meta name="groc-document-path" content="app/back/views/layout"><meta name="groc-project-path" content="app/back/views/layout.jade"><link rel="stylesheet" type="text/css" media="all" href="../../../assets/style.css"><script type="text/javascript" src="../../../assets/behavior.js"></script><body><div id="meta"><div class="file-path">app/back/views/layout.jade</div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="nn">!!! 5</span>
+<span class="nt">html</span>(<span class="na">lang=</span><span class="s">&quot;fr&quot;</span>)
+  <span class="nt">head</span>
+    <span class="nt">meta</span>(<span class="na">charset=</span><span class="s">&quot;utf-8&quot;</span>)
+    <span class="nt">meta</span>(<span class="na">name=</span><span class="s">&quot;viewport&quot;</span> <span class="na">content=</span><span class="s">&quot;width=device-width, initial-scale=1.0&quot;</span>)
+    <span class="nt">title</span><span class="p">=</span> <span class="n">title</span>
+    <span class="nt">link</span>(<span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;/app.css&quot;</span>)
+  <span class="nt">body</span>
+    <span class="nc">.container</span>
+      <span class="nc">.page-header</span>
+        <span class="nt">h1</span>
+          <span class="err">= </span><span class="nt">title</span>
+          <span class="nt">small</span><span class="nc">.text-muted</span>  @ <span class="si">#{</span><span class="n">localIP</span><span class="si">}</span>
+      <span class="nt">include</span> _breadcrumbs
+      <span class="nt">include</span> _flashes
+      <span class="nt">block</span> content
+    <span class="nt">script</span>(<span class="na">src=</span><span class="s">&quot;/vendor.js&quot;</span>)
+    <span class="nt">script</span>(<span class="na">src=</span><span class="s">&quot;/socket.io/socket.io.js&quot;</span>)
+    <span class="nt">script</span>(<span class="na">src=</span><span class="s">&quot;/back.js&quot;</span>)
+    <span class="nt">script</span>.
+      <span class="nt">require</span>(<span class="err">&#39;</span><span class="na">back</span><span class="err">/</span><span class="na">client</span><span class="err">/</span><span class="na">initialize</span><span class="err">&#39;</span>);</div></div></div></div></body></html>

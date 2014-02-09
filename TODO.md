@@ -1,6 +1,8 @@
 Étapes de dev
 =============
 
+MARKDOWNIZE TEXTS & REPLIES!
+
   6. Full comments
   7. Tests (à entrelacer dans 5 et 6)
       1. Création d'un quiz

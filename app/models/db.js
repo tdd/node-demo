@@ -1,6 +1,8 @@
 // Core DB connection
 // ==================
 
+'use strict';
+
 var Sequelize = require('sequelize');
 var path = require('path');
 
@@ -9,7 +11,7 @@ var db = new Sequelize('main', null, null, {
   dialect: 'sqlite',
   logging: 'binary' === process.env.NODE_ENV ? false : console.log,
   // Our DB is a `blend-demo.db` file in the app's root directory
-  storage: path.join(__dirname, '..', '..', 'blend-demo.db'),
+  storage: path.join(__dirname, '..', '..', 'node-demo.db'),
 });
 
 // Just a comfort wrapper

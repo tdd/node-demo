@@ -1,0 +1,10 @@
+<!DOCTYPE html><html lang="en"><head><title>app/mixins</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="app/mixins"><meta name="groc-project-path" content="app/mixins.jade"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path">app/mixins.jade</div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="shared-view-mixins">Shared view mixins</h1></div></div></div><div class="segment"><div class="code"><div class="wrapper">  <span class="nt">The</span> `icon` mixin lets us put out a Bootstrap3 icon with all the proper classes.
+  <span class="nt">e</span><span class="nc">.g</span>. use `+icon(&#39;star&#39;)` in your views (or other mixins).
+<span class="nt">mixin</span> icon(kind, classes)
+  <span class="nt">i</span><span class="nc">.glyphicon</span>(<span class="na">class=</span><span class="s">&quot;glyphicon-#{kind} #{classes || &#39;&#39;}&quot;</span>)
+
+  <span class="nt">The</span> `starred_level` mixin renders a quiz’s difficulty level (a positive number)
+  <span class="nt">as</span> the relevant number of stars, using Bootstrap3 star icons.
+<span class="nt">mixin</span> starred_level(quiz)
+  <span class="p">-</span> <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="n">i</span> <span class="k">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">quiz</span><span class="o">.</span><span class="n">level</span><span class="o">;</span> <span class="o">++</span><span class="n">i</span><span class="o">)</span>
+    <span class="err">+</span><span class="nt">icon</span>(<span class="err">&#39;</span><span class="na">star</span><span class="err">&#39;</span>)</div></div></div></div></body></html>

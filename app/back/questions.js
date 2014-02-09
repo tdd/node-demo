@@ -1,5 +1,5 @@
-// Backoffice sub-app for question management (inside quizzes)
-// -----------------------------------------------------------
+// Backoffice sub-app: question mgmt
+// =================================
 
 var Question = require('../models/question');
 var Answer = require('../models/answer');
@@ -59,7 +59,7 @@ function createQuestion(req, res) {
   // We sequence methods (async or not) here using promises.  The error case is
   // handled by passing the last `.then` call a second callback.
   req.quiz.getNextQuestionPosition()
-    .then(function(nextPos) { question.position = nextPos; })
+    .then(function(nextPos) { question.position = nextPos || 1; })
     .then(function() { return question.save(); })
     .then(function() {
       if (saveAnswers(question, req.body.answers)) {
@@ -139,7 +139,7 @@ function updateQuestion(req, res) {
 // Inlined answers management
 // --------------------------
 
-var MIN_PROPOSED_ANSWERS = 4;
+var MIN_PROPOSED_ANSWERS = 6;
 var MIN_BLANKED_ANSWERS  = 2;
 
 var RE_BLANK = /^\s*$/;

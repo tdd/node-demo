@@ -1,3 +1,6 @@
+# Front client-side quiz UX
+# =========================
+
 toolkit = require('client/toolkit')
 
 socket = io.connect()
@@ -7,9 +10,12 @@ answersAcceptable = false
 # Rendering helper
 # ----------------
 
+marked = (s) ->
+  s.replace(/`(.+?)`/g, '<tt>$1</tt>').replace(/\*(.+?)\*/g, '<em>$1</em>')
+
 renderCoreView = (tpl, hasHeader, params) ->
   tpl = require("front/views/#{tpl}")
-  html = tpl(_.omit(params, 'render'))
+  html = tpl(_.extend(_.omit(params, 'render'), marked: marked))
   ($ '.page-header')[if hasHeader then 'show' else 'hide']()
   ($ '#coreContainer').html html unless params.render?
   params.render? html

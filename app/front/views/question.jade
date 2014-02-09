@@ -5,7 +5,10 @@ include ../../mixins
 h1
   +icon('question-sign')
   &nbsp;
-  = question.title
+  != marked(question.title)
+
+if multipleAnswers
+  .alert.alert-info <strong>Attention !</strong>  Plusieurs bonnes réponses.
 
 each answer in question.answers
-  button.btn-default.btn-lg.btn-block(type='button', value=answer.id)= answer.text || answer
+  button.btn-default.btn-lg.btn-block(type='button', value=answer.id)!= marked(answer.text || answer)

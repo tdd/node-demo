@@ -1,3 +1,6 @@
+# Back client-side question mgmt
+# ==============================
+
 # React to answer deletion buttons by removing the table row for it.
 # As all answers are inlined in the host question form, it will get
 # properly deleted when the host form is submitted.

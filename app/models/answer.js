@@ -1,5 +1,7 @@
-// The Answer model
-// ================
+// Answer model
+// ============
+
+'use strict';
 
 var db = require('./db');
 var Question = require('./question');

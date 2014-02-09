@@ -1,0 +1,37 @@
+<!DOCTYPE html><html lang="en"><head><title>app/front/views/index</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../../../"><meta name="groc-document-path" content="app/front/views/index"><meta name="groc-project-path" content="app/front/views/index.jade"><link rel="stylesheet" type="text/css" media="all" href="../../../assets/style.css"><script type="text/javascript" src="../../../assets/behavior.js"></script><body><div id="meta"><div class="file-path">app/front/views/index.jade</div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="nt">include</span> ../../mixins
+<span class="nn">!!! 5</span>
+<span class="nt">html</span>(<span class="na">lang=</span><span class="s">&quot;fr&quot;</span>)
+  <span class="nt">head</span>
+    <span class="nt">meta</span>(<span class="na">charset=</span><span class="s">&quot;utf-8&quot;</span>)
+    <span class="nt">meta</span>(<span class="na">name=</span><span class="s">&quot;viewport&quot;</span> <span class="na">content=</span><span class="s">&quot;width=device-width, initial-scale=1.0&quot;</span>)
+    <span class="nt">meta</span>(<span class="na">name=</span><span class="s">&quot;user-id&quot;</span> <span class="na">content=</span><span class="nv">user</span><span class="err">.</span><span class="na">id</span>)
+    <span class="nt">title</span><span class="p">=</span> <span class="n">title</span>
+    <span class="nt">link</span>(<span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href=</span><span class="s">&quot;/app.css&quot;</span>)
+  <span class="nt">body</span><span class="nf">#front</span>
+    <span class="nc">.container</span>
+      <span class="nc">.page-header.clearfix</span>(<span class="na">style=</span><span class="err">(</span><span class="nv">engine</span><span class="err">.</span><span class="na">currentQuestion</span> <span class="err">?</span> <span class="err">&#39;</span><span class="na">display:</span> <span class="na">none</span><span class="err">&#39;</span> <span class="na">:</span> <span class="err">&#39;&#39;</span>))
+        <span class="nt">h1</span><span class="nc">.pull-left</span><span class="p">=</span> <span class="n">title</span>
+        <span class="nf">#user</span><span class="nc">.pull-right</span>
+          <span class="nt">span</span><span class="nc">.name</span><span class="p">=</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span>
+          <span class="nt">img</span><span class="nc">.avatar</span>(<span class="na">src=</span><span class="nv">user</span><span class="err">.</span><span class="na">avatar</span>)
+      <span class="nt">include</span> ../../back/views/_flashes
+
+      <span class="nf">#coreContainer</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Case 1: no init quiz yet</p></div></div><div class="code"><div class="wrapper">        <span class="nt">unless</span> engine.currentQuiz
+          <span class="nc">.jumbotron</span>
+            <span class="nc">.container</span>
+              <span class="nt">h1</span> Pas de quiz actif pour le moment
+              <span class="nt">p</span>
+                | Mais ne vous inquiétez pas, il vous suffit de patienter&amp;hellip;&amp;#32;
+                <span class="nt">small</span><span class="nc">.text-muted</span> (inutile de rafraîchir, la page se mettra toute seule à jour)</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Case 2: quiz initialized but not started yet</p></div></div><div class="code"><div class="wrapper">        <span class="nt">if</span> engine.currentQuiz &amp;&amp; !engine.isRunning()
+          <span class="p">-</span> <span class="n">quiz</span> <span class="k">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">currentQuiz</span>
+          <span class="nt">include</span> quiz_init
+
+        <span class="nt">if</span> engine.currentQuestion
+          <span class="p">-</span> <span class="n">question</span> <span class="k">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">currentQuestion</span>
+          <span class="nt">include</span> question
+
+    <span class="nt">script</span>(<span class="na">src=</span><span class="s">&quot;/vendor.js&quot;</span>)
+    <span class="nt">script</span>(<span class="na">src=</span><span class="s">&quot;/socket.io/socket.io.js&quot;</span>)
+    <span class="nt">script</span>(<span class="na">src=</span><span class="s">&quot;/front.js&quot;</span>)
+    <span class="nt">script</span> require(&#39;front/client/initialize&#39;);</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Case 3: quiz started, there's an ongoing question</p></div></div><div class="code"><div class="wrapper">    <span class="nt">if</span> engine.currentQuestion
+      <span class="nt">script</span><span class="p">!=</span> <span class="s">&quot;$(document).trigger(&#39;quiz:newQuestion&#39;, &quot;</span> <span class="o">+</span> <span class="nc">JSON</span><span class="o">.</span><span class="n">stringify</span><span class="o">(</span><span class="n">engine</span><span class="o">.</span><span class="n">currentQuestion</span><span class="o">)</span> <span class="o">+</span> <span class="err">&#39;</span><span class="o">);</span><span class="err">&#39;</span></div></div></div></div></body></html>

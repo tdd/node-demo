@@ -1,8 +1,9 @@
-// The Quiz model
-// ==============
+// Quiz model
+// ==========
 
-var db      = require('./db');
-var _       = require('underscore');
+'use strict';
+
+var db = require('./db');
 
 var Quiz = db.define('quiz', {
   title:        { type: db.types.STRING, allowNull: false, unique: true,

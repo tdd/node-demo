@@ -1,3 +1,6 @@
+// Isomorphic misc helpers
+// =======================
+
 // A simple remaining-time formatter used by server-rendered views
 // and client-rendered views alike.
 

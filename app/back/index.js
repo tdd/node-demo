@@ -1,5 +1,5 @@
-// Backoffice sub-app for quiz management
-// --------------------------------------
+// Backoffice sub-app: quiz mgmt
+// =============================
 
 var fs = require('fs');
 var passport = require('passport');

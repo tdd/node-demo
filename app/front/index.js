@@ -1,12 +1,12 @@
-// Frontoffice sub-app for quiz running
-// ------------------------------------
+// Front sub-app for quiz running
+// ==============================
+
+'use strict';
 
 var fs              = require('fs');
 var passport        = require('passport');
 var path            = require('path');
 var TwitterStrategy = require('passport-twitter').Strategy;
-var Sequelize       = require('sequelize');
-var Quiz            = require('../models/quiz');
 var engine          = require('../engine');
 var _               = require('underscore');
 var io              = require('socket.io');
@@ -164,6 +164,7 @@ readCredentials(function(creds) {
 
   passport.use(new TwitterStrategy(
     _.extend(creds, { callbackURL: 'http://' + localIP + ':3000/front' + OAUTH_CALLBACK_PATH }),
+    // _.extend(creds, { callbackURL: 'http://node-francejs.' + localIP + '.xip.io/front' + OAUTH_CALLBACK_PATH }),
     function(token, tokenSecret, profile, done) {
       var user = {
         id: profile.id,

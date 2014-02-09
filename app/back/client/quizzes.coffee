@@ -1,3 +1,6 @@
+# Back client-side quiz mgmt
+# ==========================
+
 # The toolkit box is shared by the backoffice UI and frontoffice UI.
 toolkit = require('client/toolkit')
 

@@ -38,6 +38,7 @@ block content
                     +icon('pencil')
                     &nbsp;
                     = question.title
+                    span.text-muted  (#{question.duration}s)
                 td
                   form(method="post", action="/admin/quizzes/#{quiz.id}/questions/#{question.id}")
                     input(type="hidden", name="_method", value="delete")

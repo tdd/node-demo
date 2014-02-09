@@ -1,0 +1,47 @@
+<!DOCTYPE html><html lang="en"><head><title>app/back/views/edit</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../../../"><meta name="groc-document-path" content="app/back/views/edit"><meta name="groc-project-path" content="app/back/views/edit.jade"><link rel="stylesheet" type="text/css" media="all" href="../../../assets/style.css"><script type="text/javascript" src="../../../assets/behavior.js"></script><body><div id="meta"><div class="file-path">app/back/views/edit.jade</div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="nt">extends</span> layout
+<span class="nt">include</span> ../../mixins
+<span class="nt">include</span> mixins
+
+<span class="nt">block</span> content
+  <span class="nt">ul</span><span class="nc">.nav.nav-tabs</span>
+    <span class="err">+</span><span class="nt">tab</span>(<span class="err">&#39;</span><span class="na">quiz</span><span class="err">&#39;,</span> <span class="err">&#39;</span><span class="na">Quiz</span><span class="err">&#39;,</span> <span class="na">true</span>)
+    <span class="err">+</span><span class="nt">tab</span>(<span class="err">&#39;</span><span class="na">questions</span><span class="err">&#39;,</span> <span class="err">&#39;</span><span class="na">Questions</span><span class="err">&#39;</span>)
+
+  <span class="nt">br</span>
+  <span class="nc">.tab-content</span>
+    <span class="err">+</span><span class="nt">tab_pane</span>(<span class="err">&#39;</span><span class="na">quiz</span><span class="err">&#39;,</span> <span class="na">true</span>)
+      <span class="nt">form</span>(<span class="na">method=</span><span class="s">&quot;post&quot;</span><span class="err">,</span> <span class="na">action=</span><span class="s">&quot;/admin/quizzes/#{quiz.id}&quot;</span>)
+        <span class="nt">input</span>(<span class="na">type=</span><span class="s">&quot;hidden&quot;</span><span class="err">,</span> <span class="na">name=</span><span class="s">&quot;_method&quot;</span><span class="err">,</span> <span class="na">value=</span><span class="s">&quot;put&quot;</span>)
+        <span class="nt">include</span> _form
+        <span class="nt">button</span><span class="nc">.btn.btn-primary.btn-lg</span>(<span class="na">type=</span><span class="s">&quot;submit&quot;</span>) Modifier le quiz
+
+    <span class="err">+</span><span class="nt">tab_pane</span>(<span class="err">&#39;</span><span class="na">questions</span><span class="err">&#39;</span>)
+      <span class="nt">p</span>
+        <span class="nt">a</span><span class="nc">.btn.btn-primary</span>(<span class="na">href=</span><span class="s">&quot;questions/new&quot;</span>)
+          <span class="err">+</span><span class="nt">icon</span>(<span class="err">&#39;</span><span class="na">plus</span><span class="err">&#39;</span>)
+          <span class="err">&amp;</span><span class="nt">nbsp</span>;
+          | Ajouter une question
+
+      <span class="nt">if</span> questions.length
+        <span class="nt">table</span><span class="nc">.table.table-striped.sortable</span>(<span class="na">data-remote-url=</span><span class="s">&quot;/admin/quizzes/#{quiz.id}/reorder&quot;</span>)
+          <span class="nt">thead</span>
+            <span class="nt">tr</span>
+              <span class="nt">th</span> Question
+              <span class="nt">th</span>
+          <span class="nt">tbody</span>
+            <span class="nt">each</span> question in questions
+              <span class="nt">tr</span>(<span class="na">data-id=</span><span class="nv">question</span><span class="err">.</span><span class="na">id</span>)
+                <span class="nt">td</span>
+                  <span class="err">+</span><span class="nt">icon</span>(<span class="na">question</span><span class="err">.</span><span class="na">visible</span> <span class="err">?</span> <span class="err">&#39;</span><span class="na">eye-open</span><span class="err">&#39;</span> <span class="na">:</span> <span class="err">&#39;</span><span class="na">eye-close</span><span class="err">&#39;,</span> <span class="err">&#39;</span><span class="na">text-muted</span><span class="err">&#39;</span>)
+                  <span class="err">&amp;</span><span class="nt">nbsp</span>;
+                  <span class="nt">a</span>(<span class="na">href=</span><span class="s">&quot;/admin/quizzes/#{quiz.id}/questions/#{question.id}/edit&quot;</span>)
+                    <span class="err">+</span><span class="nt">icon</span>(<span class="err">&#39;</span><span class="na">pencil</span><span class="err">&#39;</span>)
+                    <span class="err">&amp;</span><span class="nt">nbsp</span>;
+                    <span class="err">= </span><span class="nt">question</span><span class="nc">.title</span>
+                <span class="nt">td</span>
+                  <span class="nt">form</span>(<span class="na">method=</span><span class="s">&quot;post&quot;</span><span class="err">,</span> <span class="na">action=</span><span class="s">&quot;/admin/quizzes/#{quiz.id}/questions/#{question.id}&quot;</span>)
+                    <span class="nt">input</span>(<span class="na">type=</span><span class="s">&quot;hidden&quot;</span><span class="err">,</span> <span class="na">name=</span><span class="s">&quot;_method&quot;</span><span class="err">,</span> <span class="na">value=</span><span class="s">&quot;delete&quot;</span>)
+                    <span class="nt">button</span><span class="nc">.btn.btn-danger.btn-xs</span>(<span class="na">type=</span><span class="s">&quot;submit&quot;</span>)
+                      <span class="err">+</span><span class="nt">icon</span>(<span class="err">&#39;</span><span class="na">trash</span><span class="err">&#39;</span>)
+                      <span class="err">&amp;</span><span class="nt">nbsp</span>;
+                      | Supprimer</div></div></div></div></body></html>

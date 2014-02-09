@@ -1,8 +1,9 @@
-// The quiz running engine (business logic)
-// ========================================
+// Quiz-running engine
+// ===================
+
+'use strict';
 
 var Quiz      = require('./models/quiz');
-var Question  = require('./models/question');
 var Answer    = require('./models/answer');
 var redis     = require('redis').createClient();
 var _         = require('underscore');
@@ -15,11 +16,11 @@ var Promise   = require('promise');
 // Persistence keys in the Redis store
 // -----------------------------------
 
-var AUTH_PERSIST_KEY  = 'blend-demo:ips-to-users';
-var CUR_QUESTION_KEY  = 'blend-demo:current-question';
-var PLAYERS_KEY       = 'blend-demo:players';
-var SCOREBOARD_KEY    = 'blend-demo:score-board';
-var USER_LIST_KEY     = 'blend-demo:users';
+var AUTH_PERSIST_KEY  = 'node-demo:ips-to-users';
+var CUR_QUESTION_KEY  = 'node-demo:current-question';
+var PLAYERS_KEY       = 'node-demo:players';
+var SCOREBOARD_KEY    = 'node-demo:score-board';
+var USER_LIST_KEY     = 'node-demo:users';
 
 // The Engine singleton
 // --------------------
@@ -71,7 +72,7 @@ var Engine = _.extend(new events.EventEmitter(), {
         // 4. Check the amount of players to maintain our `playerCount` textual state.
         function(foo, cb)   { redis.zcard(USER_LIST_KEY, cb); },
         function(count, cb) {
-          self.playerCount = count <= 0 ? 'Aucun joueur' : (1 == count ? 'Un joueur' : count + ' joueurs');
+          self.playerCount = count <= 0 ? 'Aucun joueur' : (1 === count ? 'Un joueur' : count + ' joueurs');
           if (self.currentQuiz && !self.isRunning() && !origScore)
             self.emit('quiz-join', user, self.playerCount);
           cb();
@@ -103,7 +104,7 @@ var Engine = _.extend(new events.EventEmitter(), {
   // ranked separately (just being lazy here) in no particular order
   // amongst them.
   computeScoreboard: function computeScoreboard(cb) {
-    var self = this, players;
+    var players;
     // `async.waterfall` again, as we have a number of async steps
     // feeding into each other.
     async.waterfall([
@@ -390,7 +391,7 @@ var Engine = _.extend(new events.EventEmitter(), {
 
   // A convenience state resetter for quiz and question starts.
   reset: function reset(mode) {
-    if ('quiz' == mode) {
+    if ('quiz' === mode) {
       this.currentQuiz = null;
       this.startedAt = 0;
       redis.del(PLAYERS_KEY);
@@ -409,7 +410,7 @@ var Engine = _.extend(new events.EventEmitter(), {
   // Once a quiz, post-init, has garnered enough players, we can officially start it.
   // For randomized quizzes, this defines a one-shot, random ordering of questions.
   // Then this delegates to `nextQuestion` to pop the first question and get going.
-  start: function start(callback) {
+  start: function start() {
     this.startedAt = Date.now();
     this.reset('question');
 

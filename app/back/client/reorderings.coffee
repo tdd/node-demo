@@ -1,3 +1,6 @@
+# Backoffice ajaxified reorderings
+# ================================
+
 # Question reordering inside a quiz (questions tab).
 # Reordering is persisted through Ajax on-the-fly so
 # no extra submission is required.

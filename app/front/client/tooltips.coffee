@@ -1,3 +1,6 @@
+# Front client-side tooltips
+# ==========================
+
 # Provide Bootstrap tooltips for relevant UI elements.
 
 initTooltip = (elt) -> $(elt).tooltip()

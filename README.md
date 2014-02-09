@@ -1,5 +1,5 @@
-blend-demo(1) -- An all-around NodeJS demo for the BLEND conference
-===================================================================
+node-demo(1) -- An all-around NodeJS demo for Tech•Days FR 2014
+===============================================================
 
 SYNOPSIS
 --------
