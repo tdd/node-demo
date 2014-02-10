@@ -1,17 +1,17 @@
-node-demo(1) -- An all-around NodeJS demo for Tech•Days FR 2014
-===============================================================
+node-demo(1) -- An all-around NodeJS demo for tech·days 2014
+============================================================
 
-SYNOPSIS
+Synopsis
 --------
 
 An online quiz system with realtime sync between the quiz server and connected clients (desktops, laptops, tablets, smartphones…) and an optional hardware interface.
 
-This is a wide-angle demo of Node.js capabilities, well-known modules, best practices, code patterns, etc.  It was intended as the support of a Node.js talk at the **BLEND Web Mix 2013** conference that took place in Lyon, France on Oct 1–2, 2013.
+This is a wide-angle demo of Node.js capabilities, well-known modules, best practices, code patterns, etc.  It was intended as the support of my Node.js talks at various conferences including BLEND, France.JS and tech·days.  I also use it during my training classes for quiz running, because eh, it just works!
 
 **Note:** this README doubles as a **man page** for the executable wrapper script thanks to the `marked-man` module.  This explains a few syntactical/structural choices about its content.
 
 
-INSTALLATION
+Installation
 ------------
 
 If you are entirely new to Node.js, it is quite likely you will need to setup a number of things to be able to run this demo.  While the entire set of module dependencies is installable automatically, core technical layers need to be there already.
@@ -37,7 +37,7 @@ On Linux/Unix distros, your can either your favorite package manager if its mana
 
 On Windows, individually provided installers are probably your best bet.
 
-Once this is done, grab this code (either through Git cloning or by downloading and extracting a [Zip](https://github.com/tdd/blend-demo/archive/master.zip) or [tarball](https://github.com/tdd/blend-demo/archive/master.tar.gz)) and get into its root directory.
+Once this is done, grab this code (either through Git cloning or by downloading and extracting a [Zip](https://github.com/tdd/node-demo/archive/master.zip) or [tarball](https://github.com/tdd/node-demo/archive/master.tar.gz)) and get into its root directory.
 
 Start by installing all local dependencies:
 
@@ -69,28 +69,28 @@ brunch build
 
 The resulting tree will be in the `public` subdirectory.
 
-For those with `make` capability, both steps are automatable through `make install`
+You can also use `npm run front` instead, which will also work if you installed Brunch locally instead of globally (as `npm run` automatically prefixes your `PATH` with `./node_modules/.bin`, where local packages alias their executable wrappers).
 
-The final setup step is about **credentials**.  For obvious reasons, we did not put any credentials under version control, so you don't get any to start with.  See the **CREDENTIALS** section of this manual page for details on how to set these up.
+The final setup step is about **credentials**.  For obvious reasons, we did not put any credentials under version control, so you don't get any to start with.  See the **Credentials** section of this documentation for details on how to set these up.
 
-When you're all set with credentials, start the system with `npm start`.  Once it is done outputting stuff, you should be able to access the backoffice at `http://localhost:3000/admin` and the frontoffice at `http://localhost:3000/`.  The latter will ask you to authenticate on Twitter to obtain a name and avatar picture for your player profile.
+When you're all set with credentials, start the system with `npm start`.  Once it is done outputting stuff, you should be able to access the backoffice at `http://localhost:3000/admin` and the frontoffice at `http://X.Y.Z.T:3000/` (where X.Y.Z.T is the IP address displayed next to the title in your backoffice).  The latter will ask you to authenticate on Twitter to obtain a name and avatar picture for your player profile.
 
-You can stop the system simply by hitting Ctrl+C in its terminal.  Windows will ask for confirmation then superbly ignore you should you say no and still kill it.  This is *not* ugly: the system detects the kill request and shuts down gracefully.
+You can stop the system simply by hitting Ctrl+C in its terminal.  Windows will ask for confirmation then superbly ignore you should you say no and still kill it.  Using Ctrl+C here is *not* ugly: the system detects the kill request and shuts down gracefully.
 
-COMMAND-LINE USAGE
+Command-Line Usage
 ------------------
 
 Later on, should you wish to use this demo as a general command-line tool, you can install it globally (`npm install -g` from the app's directory), which will do three things:
 
 1. Re-install this package and all dependencies in your global Node modules directory.
-2. Link a `blend-demo` binary in your global Node binaries directory (generally a directory that is in your existing PATH, but check out the install output to see what is actually is), so you can invoke that command from anywhere.
-3. Install a man-compatible version of this README as the man page for the `blend-demo` command.  So if you wish to see this whole thing again in man format, after global install you can just type:
+2. Link a `node-demo` binary in your global Node binaries directory (generally a directory that is in your existing PATH, but check out the install output to see what is actually is), so you can invoke that command from anywhere.
+3. Install a man-compatible version of this README as the man page for the `node-demo` command.  So if you wish to see this whole thing again in man format, after global install you can just type:
 
 ```
-man blend-demo
+man node-demo
 ```
 
-The CLI wrapper for this tool, `blend-demo`, accepts a couple options:
+The CLI wrapper for this tool, `node-demo`, accepts a couple options:
 
 * `-i`, `--auto-init` *QUIZ_ID*
   Auto-inits an existing quiz based on its database ID.
@@ -99,13 +99,7 @@ The CLI wrapper for this tool, `blend-demo`, accepts a couple options:
   Displays usage.
 
 
-MAKEY MAKEY
------------
-
-For the compiler types among you, we provide a `Makefile` with a number of targets.  Aside from `make install`, you may like `make doc`, which re-generates annotated sources and the manual page in `docs`.
-
-
-WANT TO LEARN NODE?
+Want to Learn Node?
 -------------------
 
 As well you should!
@@ -117,6 +111,7 @@ A great way to get started is through "Workshopper" tools.  These are Node modul
 * [**The Art of Node**](https://github.com/maxogden/art-of-node) is a great starting resource by Max Ogden that compiles a number of useful info and links.
 * [**Learn You A Node For Much Win!**](https://github.com/rvagg/learnyounode) starts at zero and covers the very essentials of Node.
 * [**Stream Adventure**](https://github.com/substack/stream-adventure) and [**Stream Handbook**](https://github.com/substack/stream-handbook) help you dive deep into streams, that are the absolute core feature (and killer feature!) of Node.  Absolutely must-do.
+* [**NodeSchool.io**](http://nodeschool.io) provides a number of « workshoppers », including Stream Adventure alongside many others helping you learn about and practice topics such as Async.js, promises, LevelDB, and more!
 
 This aside, there are, of course, great starting resources in a more traditional, written form.
 
@@ -129,14 +124,14 @@ Finally, Geoffrey Rosenbach, of Peepcode fame, put together a great [**2-hour sc
 
 Also, remember that Node, because it runs on the V8 JavaScript engine, fully supports ES5, the latest finalized version of JavaScript.  There is a lot of power in ES5 that you're not used to when programming for browsers and needing to support IE8 or below, so you should get familiar with its new goodies, especially all the new methods on `Array` and `Object`, not to mention `Function#bind`.
 
-DO YOU TRAIN PEOPLE ON NODE?
+Do you train people on Node?
 ----------------------------
 
-Absolutely.  My company, [Delicious Insights](http://delicious-insights.com/), does a lot of JS training, including Node (from January 2014 on).  While all of our multi-company, pre-scheduled training sessions happen in Paris and in French, we can completely cater in English to your in-house needs anywhere in Europe, or anywhere in the world if you're game for it!
+Absolutely.  My company, [Delicious Insights](http://delicious-insights.com/), does a lot of JS training, including Node.  While all of our multi-company, pre-scheduled training sessions happen in Paris and in French, we can completely cater in English to your in-house needs anywhere in Europe, or anywhere in the world if you're game for it!
 
 We're currently setting up our public Node training pages and will link to them from this README when they're available.  In the meantime, feel free to contact me using the address at the bottom of this page or in the app’s `package.json` file.
 
-CREDENTIALS
+Credentials
 -----------
 
 We mentioned before that this demo app needs two sets of credentials to work, one for the backoffice (admin pages) and one for the frontoffice (players-facing UI).
@@ -172,14 +167,14 @@ Create a `credentials.json` file in the `app/front` subdirectory.  It should hav
 }
 ```
 
-There!  You're done!  Restart the app (you could just type `rs` and hit Return in your running app's `nodemon` terminal, or hit Ctrl+C and run it again), make sure that the logs tell you front credentials were logged, and try accessing `http://localhost:3000`.  You should first get redirected to Twitter for authentication, displaying your very own app's name, icon and description.  Login if necessary, then click “Authorize app”: you should get to the "No active quiz yet" page.
+There!  You're done!  Restart the app (you could just type `rs` and hit Return in your running app's `nodemon` terminal, or hit Ctrl+C and run it again), make sure that the logs tell you front credentials were logged, and try accessing `http://X.Y.Z.T:3000` (where X.Y.Z.T is the IP address displayed in your backoffice, next to the title).  You should first get redirected to Twitter for authentication, displaying your very own app's name, icon and description.  Login if necessary, then click “Authorize app”: you should get to the "No active quiz yet" page.
 
 The system persists your Twitter user for the URL you're using and your current accessing IP in Redis, so you don't have to re-auth all the time.
 
 Congratulations, you went through all the credentials setup, you're all set to go and play!
 
 
-WTF ARDUINO?
+WTF Arduino?
 ------------
 
 What, you don't know Arduino yet?  Tsk tsk tsk.
@@ -202,27 +197,30 @@ If you're interested in discovering the joys of hardware/robotics programming wi
 * You can buy Arduino boards, electronic parts and various put-together things (like a breadboard and wires) at many online stores.  Most offer [starter kits](http://snootlab.com/lang-en/snootlab-shields/90-snootlab-starter-kit-en.html) that are a great place to start with.  In the US people seem to like [Sparkfun](https://www.sparkfun.com/) a lot, in France I'm partial to [Snootlab](http://snootlab.com/lang-en/6-arduino).
 * [The Adafruit Learning System](http://learn.adafruit.com/category/learn-arduino) is an absolutely amazing learning resource for anything related to microcontrollers and do-it-yourself electronics.
 
-When you're ready to put together the board used by this demo's Arduino module, [the diagram is here](https://raw.github.com/tdd/blend-demo/master/docs/blend-demo-arduino.png).
+When you're ready to put together the board used by this demo's Arduino module, [the diagram is here](https://raw.github.com/tdd/node-demo/master/docs/node-demo-arduino.png).
 
 
-TO-DO
+Videos
+------
+
+The video of the first session I held at BLEND isn't up yet, but [the one at FranceJS is available](http://2013.capitoledulibre.org/conferences/francejs/tour-dhorizon-de-nodejs.html).  I'll link to the tech·days one when it's up, which should happen soon.
+
+To-Do
 -----
 
 * Unit tests of parts of the engine with Mocha
 * Integration tests of the whole stack with Mocha + CasperJS
 * Travis integration
-* Once the talk video is online, link to it from this README.
 
 Watch the Github repo for updates!
 
-
-REPORTING BUGS
+Reporting Bugs
 --------------
 
-Use the [blend-demo issues page](https://github.com/tdd/blend-demo/issues) on Github.
+Use the [node-demo issues page](https://github.com/tdd/node-demo/issues) on Github.
 
 
-AUTHOR
+Author
 ------
 
 [Christophe Porteneuve](mailto:christophe@delicious-insights.com)
