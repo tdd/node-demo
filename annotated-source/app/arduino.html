@@ -1,0 +1,81 @@
+<!DOCTYPE html><html lang="en"><head><title>app/arduino</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../"><meta name="groc-document-path" content="app/arduino"><meta name="groc-project-path" content="app/arduino.js"><link rel="stylesheet" type="text/css" media="all" href="../assets/style.css"><script type="text/javascript" src="../assets/behavior.js"></script><body><div id="meta"><div class="file-path">app/arduino.js</div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="arduino-bridge">Arduino bridge</h1></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Simply requiring this module lets us control an Arduino-driven
+feedback based on subscriptions to the <code>Engine</code>’s events.  This
+requires having connected an Arduino board with a Standard Firmata
+on it, cabled to a circuit or breadboard as described in
+<a href="./blend-demo-arduino.png">this diagram</a>.</p></div></div><div class="code"><div class="wrapper"><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;colors&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">engine</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./engine&#39;</span><span class="p">);</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Johnny-Five is the high-level JS interface to the <code>firmata</code> module, which
+itself relies on the <code>serialport</code> module to communicate over USB to the
+Firmata flashed onto the Arduino board.</p></div></div><div class="code"><div class="wrapper"><span class="kd">var</span> <span class="nx">five</span>   <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;johnny-five&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">_</span>      <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;underscore&#39;</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">lcd</span><span class="p">,</span> <span class="nx">green</span><span class="p">,</span> <span class="nx">yellow</span><span class="p">,</span> <span class="nx">red</span><span class="p">;</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Connect to the board; do not attempt to setup a REPL.</p></div></div><div class="code"><div class="wrapper"><span class="kd">var</span> <span class="nx">board</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">five</span><span class="p">.</span><span class="nx">Board</span><span class="p">({</span> <span class="nx">repl</span><span class="o">:</span> <span class="kc">false</span> <span class="p">});</span>
+<span class="nx">board</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;ready&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Arduino board ready&#39;</span><span class="p">.</span><span class="nx">debug</span><span class="p">);</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>We're assuming a standard 2x16 LCD display that we're going to use in
+the usual 4-bit mode.</p></div></div><div class="code"><div class="wrapper">  <span class="nx">lcd</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">five</span><span class="p">.</span><span class="nx">LCD</span><span class="p">({</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><pre><code>RS  EN  DB4 DB5 DB6 DB7
+</code></pre></div></div><div class="code"><div class="wrapper">    <span class="nx">pins</span><span class="o">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span>  <span class="mi">6</span><span class="p">,</span>  <span class="mi">7</span><span class="p">,</span>  <span class="mi">8</span><span class="p">,</span>  <span class="mi">9</span><span class="p">,</span>  <span class="mi">10</span><span class="p">]</span>
+  <span class="p">});</span>
+  <span class="nx">lcd</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;ready&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">lcd</span><span class="p">.</span><span class="nx">clear</span><span class="p">().</span><span class="nx">print</span><span class="p">(</span><span class="s1">&#39;Welcome to BLEND&#39;</span><span class="p">);</span>
+  <span class="p">});</span>
+
+  <span class="nx">green</span>  <span class="o">=</span> <span class="k">new</span> <span class="nx">five</span><span class="p">.</span><span class="nx">Led</span><span class="p">({</span> <span class="nx">pin</span><span class="o">:</span> <span class="mi">11</span> <span class="p">}).</span><span class="nx">off</span><span class="p">();</span>
+  <span class="nx">yellow</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">five</span><span class="p">.</span><span class="nx">Led</span><span class="p">({</span> <span class="nx">pin</span><span class="o">:</span> <span class="mi">12</span> <span class="p">}).</span><span class="nx">off</span><span class="p">();</span>
+  <span class="nx">red</span>    <span class="o">=</span> <span class="k">new</span> <span class="nx">five</span><span class="p">.</span><span class="nx">Led</span><span class="p">({</span> <span class="nx">pin</span><span class="o">:</span> <span class="mi">13</span> <span class="p">}).</span><span class="nx">off</span><span class="p">();</span>
+
+  <span class="nx">bindToEngine</span><span class="p">();</span>
+<span class="p">});</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>This subscribes to the quiz engine's events in order to provide live
+feedback on the board through the LCD display and, when a question ends,
+the LCD LEDs.</p></div></div><div class="code"><div class="wrapper"><span class="kd">function</span> <span class="nx">bindToEngine</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">engine</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;quiz-init&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">quiz</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">clearLEDs</span><span class="p">();</span>
+    <span class="nx">lcd</span><span class="p">.</span><span class="nx">clear</span><span class="p">().</span><span class="nx">cursor</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">).</span><span class="nx">print</span><span class="p">(</span><span class="nx">quiz</span><span class="p">.</span><span class="nx">title</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">));</span>
+    <span class="nx">secondRow</span><span class="p">(</span><span class="s1">&#39;Quiz initializes:&#39;</span><span class="p">);</span>
+  <span class="p">});</span>
+
+  <span class="nx">engine</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;quiz-join&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span> <span class="nx">playerCount</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>playerCount is actually formatted text: let's strip it
+down to its counter</p></div></div><div class="code"><div class="wrapper">    <span class="nx">playerCount</span> <span class="o">=</span> <span class="nx">playerCount</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/\d+/</span><span class="p">);</span>
+    <span class="nx">secondRow</span><span class="p">(</span><span class="nx">playerCount</span> <span class="o">+</span> <span class="s1">&#39; - &#39;</span> <span class="o">+</span> <span class="nx">user</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+  <span class="p">});</span>
+
+  <span class="nx">engine</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;question-start&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">question</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">clearLEDs</span><span class="p">();</span>
+    <span class="nx">lcd</span><span class="p">.</span><span class="nx">clear</span><span class="p">().</span><span class="nx">cursor</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">).</span><span class="nx">print</span><span class="p">(</span><span class="s1">&#39;Q: &#39;</span> <span class="o">+</span> <span class="nx">question</span><span class="p">.</span><span class="nx">title</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">13</span><span class="p">));</span>
+  <span class="p">});</span>
+
+  <span class="nx">engine</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;question-end&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">stats</span><span class="p">)</span> <span class="p">{</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Compute a text for the second row using question-rank letters
+(A, B, etc.) and reply percentages.  Prefix the correct answers
+with a star.  e.g. 'A 25% *B 80% C 10%' (multiple answers allowed).</p></div></div><div class="code"><div class="wrapper">    <span class="kd">var</span> <span class="nx">text</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">stats</span><span class="p">.</span><span class="nx">spreads</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">spread</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">stats</span><span class="p">.</span><span class="nx">statuses</span><span class="p">[</span><span class="nx">index</span><span class="p">])</span>
+        <span class="nx">text</span> <span class="o">+=</span> <span class="s1">&#39;*&#39;</span><span class="p">;</span>
+      <span class="nx">text</span> <span class="o">+=</span> <span class="nx">spread</span><span class="p">.</span><span class="nx">percent</span> <span class="o">+</span> <span class="s1">&#39;%&#39;</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">index</span> <span class="o">&lt;</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">spreads</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="nx">text</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span><span class="p">;</span>
+    <span class="p">});</span>
+    <span class="nx">secondRow</span><span class="p">(</span><span class="nx">text</span><span class="p">);</span></div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Light the proper LED.  Green if >= 67% of the players have provided
+the correct answer set.  Yellow if 34-66%.  Red under 34%.</p></div></div><div class="code"><div class="wrapper">    <span class="kd">var</span> <span class="nx">led</span> <span class="o">=</span> <span class="nx">green</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">stats</span><span class="p">.</span><span class="nx">correctPercent</span> <span class="o">&lt;</span> <span class="mi">67</span><span class="p">)</span>
+      <span class="nx">led</span> <span class="o">=</span> <span class="nx">yellow</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">stats</span><span class="p">.</span><span class="nx">correctPercent</span> <span class="o">&lt;</span> <span class="mi">34</span><span class="p">)</span>
+      <span class="nx">led</span> <span class="o">=</span> <span class="nx">red</span><span class="p">;</span>
+    <span class="nx">led</span><span class="p">.</span><span class="nx">on</span><span class="p">();</span>
+  <span class="p">});</span>
+
+  <span class="nx">engine</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;quiz-end&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">lcd</span><span class="p">.</span><span class="nx">clear</span><span class="p">().</span><span class="nx">cursor</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">).</span><span class="nx">print</span><span class="p">(</span><span class="s1">&#39;Quiz done!&#39;</span><span class="p">);</span>
+    <span class="nx">clearLEDs</span><span class="p">();</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">clearLEDs</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">green</span><span class="p">.</span><span class="nx">off</span><span class="p">();</span>
+  <span class="nx">yellow</span><span class="p">.</span><span class="nx">off</span><span class="p">();</span>
+  <span class="nx">red</span><span class="p">.</span><span class="nx">off</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">EMPTY_TEXT</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="mi">17</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">);</span>
+
+<span class="kd">function</span> <span class="nx">secondRow</span><span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">lcd</span><span class="p">.</span><span class="nx">cursor</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">).</span><span class="nx">print</span><span class="p">(</span><span class="nx">EMPTY_TEXT</span><span class="p">);</span>
+  <span class="nx">lcd</span><span class="p">.</span><span class="nx">cursor</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">).</span><span class="nx">print</span><span class="p">(</span><span class="nx">text</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">));</span>
+<span class="p">}</span></div></div></div></div></body></html>

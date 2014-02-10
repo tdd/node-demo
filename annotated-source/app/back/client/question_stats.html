@@ -1,0 +1,31 @@
+<!DOCTYPE html><html lang="en"><head><title>app/back/client/question_stats</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../../../"><meta name="groc-document-path" content="app/back/client/question_stats"><meta name="groc-project-path" content="app/back/client/question_stats.jade"><link rel="stylesheet" type="text/css" media="all" href="../../../assets/style.css"><script type="text/javascript" src="../../../assets/behavior.js"></script><body><div id="meta"><div class="file-path">app/back/client/question_stats.jade</div></div><div id="document"><div class="segment"><div class="comments "><div class="wrapper"><h1 id="question-stats-view">Question stats view</h1></div></div></div><div class="segment"><div class="code"><div class="wrapper"><span class="nt">include</span> ../../mixins</div></div></div><div class="segment"><div class="comments "><div class="wrapper"><p>Spreads and correctness</p></div></div><div class="code"><div class="wrapper"><span class="nc">.row</span>
+  <span class="nc">.col-md-2</span>
+    <span class="nt">each</span> spread, index in stats.spreads
+      <span class="nt">div</span>
+        <span class="err">= </span><span class="nt">String</span><span class="nc">.fromCharCode</span>(<span class="na">65</span> <span class="err">+</span> <span class="na">index</span>)
+        <span class="nt">if</span> stats.statuses[index]
+          | *
+        |  :&amp;#32;
+        <span class="err">= </span><span class="nt">spread</span><span class="nc">.count</span>
+        <span class="err">&amp;</span><span class="nt">nbsp</span>;
+        <span class="nt">span</span><span class="nc">.text-muted</span> (<span class="si">#{</span><span class="n">spread</span><span class="o">.</span><span class="n">percent</span><span class="si">}</span>%)
+  <span class="nc">.col-md-3</span>
+    <span class="nt">div</span>
+      <span class="nt">if</span> 0 == stats.correctCount
+        | Aucune bonne réponse :-(
+      <span class="nt">else</span> if 1 == stats.correctCount
+        | Une bonne réponse
+        <span class="err">&amp;</span><span class="nt">nbsp</span>;
+        <span class="nt">span</span><span class="nc">.text-muted</span> (<span class="si">#{</span><span class="n">stats</span><span class="o">.</span><span class="n">correctPercent</span><span class="si">}</span>%)
+      <span class="nt">else</span>
+        | <span class="si">#{</span><span class="n">stats</span><span class="o">.</span><span class="n">correctCount</span><span class="si">}</span> bonnes réponses
+        <span class="err">&amp;</span><span class="nt">nbsp</span>;
+        <span class="nt">span</span><span class="nc">.text-muted</span> (<span class="si">#{</span><span class="n">stats</span><span class="o">.</span><span class="n">correctPercent</span><span class="si">}</span>%)
+    <span class="nt">a</span><span class="nf">#nextQuestion</span><span class="nc">.btn.btn-primary</span>(<span class="na">href=</span><span class="s">&quot;/admin/quizzes/#{quizId}/next&quot;</span>)
+      | Question suivante
+      <span class="err">&amp;</span><span class="nt">nbsp</span>;
+      <span class="err">+</span><span class="nt">icon</span>(<span class="err">&#39;</span><span class="na">forward</span><span class="err">&#39;</span>)
+  <span class="nc">.col-md-7</span>
+    <span class="nt">ul</span><span class="nf">#players</span><span class="nc">.list-unstyled</span>
+      <span class="nt">each</span> user in stats.random10Bests
+        <span class="nt">include</span> ../../front/views/quiz_user</div></div></div></div></body></html>

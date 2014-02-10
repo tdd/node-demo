@@ -1,0 +1,14 @@
+<!DOCTYPE html><html lang="en"><head><title>app/front/views/quiz_init</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../../../"><meta name="groc-document-path" content="app/front/views/quiz_init"><meta name="groc-project-path" content="app/front/views/quiz_init.jade"><link rel="stylesheet" type="text/css" media="all" href="../../../assets/style.css"><script type="text/javascript" src="../../../assets/behavior.js"></script><body><div id="meta"><div class="file-path">app/front/views/quiz_init.jade</div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="nt">include</span> ../../mixins
+
+<span class="nc">.jumbotron</span>
+  <span class="nc">.container</span>
+    <span class="nt">h1</span>
+      <span class="nt">span</span><span class="nc">.quizName</span><span class="p">=</span> <span class="n">quiz</span><span class="o">.</span><span class="n">title</span>
+      <span class="nt">span</span><span class="nc">.text-muted</span>  va démarrer&amp;hellip;
+    <span class="nt">p</span><span class="nc">.text-muted</span>
+      <span class="err">+</span><span class="nt">starred_level</span>(<span class="na">quiz</span>)
+      <span class="err">&amp;</span><span class="nt">nbsp</span>;
+      <span class="err">= </span><span class="nt">quiz</span><span class="nc">.description</span>
+    <span class="nt">ul</span><span class="nf">#players</span><span class="nc">.list-unstyled</span>
+      <span class="nt">each</span> user in users
+        <span class="nt">include</span> quiz_user</div></div></div></div></body></html>

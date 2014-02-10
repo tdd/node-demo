@@ -1,0 +1,20 @@
+<!DOCTYPE html><html lang="en"><head><title>app/back/views/scoreboard</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../../../"><meta name="groc-document-path" content="app/back/views/scoreboard"><meta name="groc-project-path" content="app/back/views/scoreboard.jade"><link rel="stylesheet" type="text/css" media="all" href="../../../assets/style.css"><script type="text/javascript" src="../../../assets/behavior.js"></script><body><div id="meta"><div class="file-path">app/back/views/scoreboard.jade</div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="nt">extends</span> layout
+<span class="nt">include</span> ../../mixins
+<span class="nt">include</span> mixins
+
+<span class="nt">block</span> content
+  <span class="nt">table</span><span class="nf">#scoreboard</span><span class="nc">.table-striped</span>
+    <span class="nt">thead</span>
+      <span class="nt">tr</span>
+        <span class="nt">th</span><span class="nc">.col-md-1</span> Rang
+        <span class="nt">th</span> Joueur
+        <span class="nt">th</span><span class="nc">.col-md-1</span> Score
+    <span class="nt">tbody</span>
+      <span class="nt">each</span> user, index in scoreboard
+        <span class="nt">tr</span>
+          <span class="nt">td</span><span class="p">=</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span>
+          <span class="nt">td</span>
+            <span class="nt">img</span><span class="nc">.avatar</span>(<span class="na">src=</span><span class="nv">user</span><span class="err">.</span><span class="na">avatar</span><span class="err">,</span> <span class="na">alt=</span><span class="nv">user</span><span class="err">.</span><span class="na">name</span>)
+            <span class="err">= </span><span class="nt">user</span><span class="nc">.name</span>
+
+          <span class="nt">td</span><span class="p">=</span> <span class="n">user</span><span class="o">.</span><span class="n">score</span></div></div></div></div></body></html>

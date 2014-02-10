@@ -1,0 +1,46 @@
+<!DOCTYPE html><html lang="en"><head><title>app/back/views/questions/_form</title></head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"><meta name="groc-relative-root" content="../../../../"><meta name="groc-document-path" content="app/back/views/questions/_form"><meta name="groc-project-path" content="app/back/views/questions/_form.jade"><link rel="stylesheet" type="text/css" media="all" href="../../../../assets/style.css"><script type="text/javascript" src="../../../../assets/behavior.js"></script><body><div id="meta"><div class="file-path">app/back/views/questions/_form.jade</div></div><div id="document"><div class="segment"><div class="code"><div class="wrapper"><span class="nt">include</span> mixins
+<span class="p">-</span> <span class="nc">Question</span> <span class="k">=</span> <span class="n">question</span><span class="o">.</span><span class="n">daoFactory</span>
+<span class="p">-</span> <span class="n">question</span><span class="o">.</span><span class="n">errors</span> <span class="k">=</span> <span class="n">question</span><span class="o">.</span><span class="n">errors</span> <span class="o">||</span> <span class="o">{}</span>
+<span class="nc">.form-group</span>(<span class="na">class=</span><span class="err">(</span><span class="nv">question</span><span class="err">.</span><span class="na">errors</span><span class="err">.</span><span class="na">title</span> <span class="err">?</span> <span class="err">&#39;</span><span class="na">has-error</span><span class="err">&#39;</span> <span class="na">:</span> <span class="na">null</span>))
+  <span class="nt">label</span>(<span class="na">for=</span><span class="s">&quot;title&quot;</span>) Titre
+  <span class="nt">input</span><span class="nf">#title</span><span class="nc">.form-control</span>(<span class="na">type=</span><span class="s">&quot;text&quot;</span><span class="err">,</span> <span class="na">name=</span><span class="s">&quot;question[title]&quot;</span><span class="err">,</span> <span class="na">value=</span><span class="nv">question</span><span class="err">.</span><span class="na">title</span><span class="err">,</span> <span class="na">autofocus</span>)
+  <span class="nt">if</span> question.errors.title
+    <span class="nc">.help-block</span><span class="p">=</span> <span class="n">question</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">join</span><span class="o">(</span><span class="err">&#39;</span><span class="o">,</span> <span class="err">&#39;</span><span class="o">)</span>
+<span class="nc">.form-group</span>
+  <span class="nt">label</span>(<span class="na">for=</span><span class="s">&quot;duration&quot;</span>) Temps autorisé
+  <span class="nt">select</span><span class="nf">#duration</span><span class="nc">.form-control</span>(<span class="na">name=</span><span class="s">&quot;question[duration]&quot;</span>)
+    <span class="p">-</span> <span class="n">range</span> <span class="k">=</span> <span class="nc">Question</span><span class="o">.</span><span class="n">rawAttributes</span><span class="o">.</span><span class="n">duration</span><span class="o">.</span><span class="n">validate</span>
+    <span class="p">-</span> <span class="k">for</span> <span class="o">(</span><span class="k">var</span> <span class="n">i</span> <span class="k">=</span> <span class="n">range</span><span class="o">.</span><span class="n">min</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">range</span><span class="o">.</span><span class="n">max</span><span class="o">;</span> <span class="n">i</span> <span class="o">+=</span> <span class="mi">5</span><span class="o">)</span>
+      <span class="nt">option</span>(<span class="na">value=</span><span class="nv">i</span><span class="err">,</span> <span class="na">selected=</span><span class="err">(</span><span class="nv">question</span><span class="err">.</span><span class="na">duration =</span><span class="err">==</span> <span class="nv">i</span>))
+        <span class="err">+</span><span class="nt">format_duration</span>(<span class="na">i</span>)
+<span class="nc">.checkbox</span>
+  <span class="nt">label</span>
+    <span class="nt">input</span>(<span class="na">type=</span><span class="s">&quot;hidden&quot;</span><span class="err">,</span> <span class="na">name=</span><span class="s">&quot;question[visible]&quot;</span><span class="err">,</span> <span class="na">value=</span><span class="nv">0</span>)
+    <span class="nt">input</span>(<span class="na">type=</span><span class="s">&quot;checkbox&quot;</span><span class="err">,</span> <span class="na">name=</span><span class="s">&quot;question[visible]&quot;</span><span class="err">,</span> <span class="na">checked=</span><span class="nv">question</span><span class="err">.</span><span class="na">visible</span><span class="err">,</span> <span class="na">value=</span><span class="nv">1</span>)
+    | Visible
+
+<span class="nt">fieldset</span>
+  <span class="nt">legend</span> Réponses
+
+  <span class="nt">table</span><span class="nf">#answers</span><span class="nc">.table.table-striped.sortable</span>
+    <span class="nt">thead</span>
+      <span class="nt">tr</span>
+        <span class="nt">th</span> Correcte ?
+        <span class="nt">th</span> Texte
+        <span class="nt">unless</span> question.isNewRecord
+          <span class="nt">th</span>
+    <span class="nt">tbody</span>
+      <span class="nt">each</span> answer, i in answers
+        <span class="nt">tr</span>
+          <span class="nt">td</span><span class="nc">.col-xs-1</span>
+            <span class="nt">unless</span> answer.isNewRecord
+              <span class="nt">input</span>(<span class="na">type=</span><span class="s">&quot;hidden&quot;</span><span class="err">,</span> <span class="na">name=</span><span class="s">&quot;answers[#{i}][id]&quot;</span><span class="err">,</span> <span class="na">value=</span><span class="nv">answer</span><span class="err">.</span><span class="na">id</span>)
+            <span class="nt">input</span>(<span class="na">type=</span><span class="s">&quot;hidden&quot;</span><span class="err">,</span> <span class="na">name=</span><span class="s">&quot;answers[#{i}][correct]&quot;</span><span class="err">,</span> <span class="na">value=</span><span class="nv">0</span>)
+            <span class="nt">input</span>(<span class="na">type=</span><span class="s">&quot;checkbox&quot;</span><span class="err">,</span> <span class="na">name=</span><span class="s">&quot;answers[#{i}][correct]&quot;</span><span class="err">,</span> <span class="na">checked=</span><span class="nv">answer</span><span class="err">.</span><span class="na">correct</span><span class="err">,</span> <span class="na">value=</span><span class="nv">1</span>)
+          <span class="nt">td</span><span class="nc">.col-xs-10</span>
+            <span class="nt">input</span><span class="nc">.form-control</span>(<span class="na">type=</span><span class="s">&quot;text&quot;</span><span class="err">,</span> <span class="na">name=</span><span class="s">&quot;answers[#{i}][text]&quot;</span><span class="err">,</span> <span class="na">value=</span><span class="nv">answer</span><span class="err">.</span><span class="na">text</span>)
+          <span class="nt">unless</span> question.isNewRecord
+            <span class="nt">td</span>
+              <span class="nt">a</span><span class="nc">.btn.btn-danger.btn-xs</span>(<span class="na">href=</span><span class="s">&quot;#&quot;</span><span class="err">,</span> <span class="na">data-action=</span><span class="s">&quot;remove&quot;</span>)
+                <span class="err">+</span><span class="nt">icon</span>(<span class="err">&#39;</span><span class="na">trash</span><span class="err">&#39;</span>)
+                |  Retirer</div></div></div></div></body></html>
