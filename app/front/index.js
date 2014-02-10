@@ -163,7 +163,7 @@ readCredentials(function(creds) {
   console.log('OAuth callback IP', localIP);
 
   passport.use(new TwitterStrategy(
-    _.extend(creds, { callbackURL: 'http://' + localIP + ':3000/front' + OAUTH_CALLBACK_PATH }),
+    _.extend(creds, { callbackURL: '/front' + OAUTH_CALLBACK_PATH }),
     // _.extend(creds, { callbackURL: 'http://node-francejs.' + localIP + '.xip.io/front' + OAUTH_CALLBACK_PATH }),
     function(token, tokenSecret, profile, done) {
       var user = {
