@@ -40,34 +40,15 @@
       <!-- Any section element inside of this container is displayed as a slide -->
       <div class="slides">
 
-        <section id="intro" data-state="intro">
-          <h1>Tour d’horizon de Node.js</h1>
-          <h3>Une présentation de Christophe Porteneuve aux tech·days 2014</h3>
-        </section>
-
         <section>
           <h1>NodeJS</h1>
           <h3>Tour d’horizon</h3>
           <p>
             <small>
               <a href="http://tddsworld.com">Christophe Porteneuve</a>
-              à <a href="http://www.microsoft.com/france/mstechdays/">tech·days 2014</a>
+              à <a href="http://www.mix-it.fr/">Mix-IT 2014</a>
             </small>
           </p>
-        </section>
-
-        <section>
-          <h1>Donnez votre avis !</h1>
-
-          <p>
-            Depuis votre smartphone :
-            <a href="http://notes.mstechdays.fr">http://notes.mstechdays.fr</a>
-          </p>
-          <br>
-          <p>De nombreux lots à gagner toutes les heures !</p>
-          <p>Claviers, souris et jeux Microsoft…</p>
-          <br>
-          <p>Merci de nous aider à améliorer les tech·days !</p>
         </section>
 
         <section>
@@ -101,9 +82,9 @@
             <li class="fragment">06/2010 : <a href="https://www.nodejitsu.com/">Nodejitsu</a></li>
             <li class="fragment">11/2010 : <a href="http://expressjs.com/">Express</a> 1.0</li>
             <li class="fragment">05/2011 : <a href="https://npmjs.org/">npm</a> 1.0</li>
-            <li class="fragment">12/2011 : Azure <a href="http://www.windowsazure.com/en-us/develop/nodejs/">prend en charge Node.js</a></li>
+            <li class="fragment">12/2011 : Même MS Azure <a href="http://www.windowsazure.com/en-us/develop/nodejs/">prend en charge Node.js</a></li>
             <li class="fragment">2013 : déferlante de <a href="http://strongloop.com/node-republic/node-js-infographic/">gros usages en production</a> (eBay, PayPal, LinkedIn, Walmart, IBM…).  <a href="https://nodejstools.codeplex.com/">Support officiel dans Visual Studio</a>.</li>
-            <li class="fragment">Aujourd’hui : 58K+ modules dans npm, Top-5 PaaS, conférences JS/Node pratiquement toutes les semaines.</li>
+            <li class="fragment">Aujourd’hui : 70K+ modules dans npm, Top-5 PaaS, conférences JS/Node pratiquement toutes les semaines.</li>
           </ol>
         </section>
 
@@ -112,32 +93,29 @@
 
           <p>Nombreux très gros sites et systèmes basés sur Node</p>
           <p>
-            <strong>eBay</strong> (<a href="http://ql.io">ql.io</a>, <a href="http://www.technology-ebay.de/the-teams/mobile-de/blog/deploying-node-applications-with-capistrano-github-nginx-and-upstart.html">1</a>),
-            <strong>LinkedIn</strong>
-              (<a href="http://venturebeat.com/2011/08/16/linkedin-node/">1</a>,
-               <a href="http://www.infoq.com/fr/news/2013/05/Ruby-on-Rails-Node-js-LinkedIn">2</a>,
-               <a href="http://www.greenit.fr/article/bonnes-pratiques/eco-conception-logicielle-10-fois-moins-de-serveurs-pour-linkedin-4783">3</a>,
-               <a href="http://engineering.linkedin.com/tags/nodejs">4</a>),
-            <strong>PayPal</strong> (<a href="http://www.nearform.com/nodecrunch/release-the-kracken-how-paypal-is-being-revolutionized-by-node-js-and-lean-ux">Kraken</a>),
-            <br>
-            <strong>IBM</strong> (<a href="http://webcache.googleusercontent.com/search?q=cache:J3mPEaI1cDsJ:www.ibm.com/developerworks/java/library/mo-nodejs-1/index.html%3Fca%253Ddrs-+&cd=2&hl=fr&ct=clnk&gl=fr">Mobile platform</a>),
-            <strong>Airbnb</strong> (<a href="http://nerds.airbnb.com/isomorphic-javascript-future-web-apps/">1</a>),
+            <strong>Walmart</strong>,
+            <strong>eBay</strong>,
+            <strong>LinkedIn</strong>,
+            <strong>PayPal</strong>,
+            <strong>IBM</strong>,
+            <strong>Airbnb</strong>,
             <strong>Uber</strong>,
+            <strong>Medium</strong>,
+            <strong>Groupon</strong>,
             <strong>MySpace</strong>,
-            <strong>Mozilla</strong> (Persona),
-            <small>Klout,
-            Yahoo! (Manhattan, Mojito, Cocktails…),
+            <strong>Mozilla</strong>,
+            <strong>Yahoo!</strong>,
+            Klout,
             Dow Jones,
-            New York Times (parties),
-            BBC (cœur),
+            New York Times,
+            BBC,
             Transloadit,
             Iris Couch,
             Segment.io
             Apiary.io…</small>
           </p>
-          <p>Sans oublier une bonne partie du BaaS <a href="http://www.windowsazure.com/fr-fr/services/mobile-services/">Azure Mobile Services</a>…</p>
           <p>Développement sponsorisé par Joyent.  Formation et consulting haut de gamme initiés par The Node Firm.</p>
-          <p>En fait, <a href="http://strongloop.com/node-republic/node-js-infographic/">regardez ça, ça calme</a>.</p>
+          <p>En fait, <a href="http://strongloop.com/node-republic/node-js-infographic/">regardez ça, ça calme</a>. <a href="https://www.youtube.com/watch?v=bqLXjNbMZpY">Et ça aussi</a>.</p>
         </section>
 
         <section>
@@ -154,21 +132,8 @@
           <h1>Écosystème</h1>
           <h3>riche et vivant</h3>
 
-          <p>58K+ modules dans npm (~ +155/jour, <a href="http://modulecounts.com/">leader</a>)</p>
-          <p>~5M downloads/jour</p>
-        </section>
-
-        <section>
-          <h1>Azure &amp; Node</h1>
-          <h3>Copains comme cochons</h3>
-
-          <p>Microsoft contribue à Node depuis des années</p>
-          <p>Une des principales options dans Azure</p>
-          <p>Sous-tend une bonne partie des Azure Mobile Services</p>
-          <p>Beau toolkit gratuit : <a href="https://nodejstools.codeplex.com/">Node.js Tools for Visual Studio</a></p>
-          <br>
-          <h3>En savoir plus :</h3>
-          <p><a href="http://www.windowsazure.com/en-us/develop/nodejs/">http://www.windowsazure.com/en-us/develop/nodejs/</a></p>
+          <p>70K+ modules dans npm (~ +176/jour, <a href="http://modulecounts.com/">leader</a>)</p>
+          <p>~7,5M downloads/jour</p>
         </section>
 
         <section>
@@ -243,7 +208,10 @@
 
             <p><small><em>(Obligatory shameless plug)</em></small></p>
 
-            <p><a href="http://www.js-attitude.fr/node-js">Formation Node.js chez JS Attitude</a></p>
+            <p>
+              <a href="http://www.js-attitude.fr/node-js">Formation Node.js chez JS Attitude</a>
+              <br/><small>(prochaine inter-entreprises en septembre.  Intras possibles avant !)</small>
+            </p>
           </div>
         </section>
 
@@ -252,7 +220,7 @@
 
           <p><a href="https://twitter.com/porteneuve">@porteneuve</a></p>
           <p><a href="http://www.js-attitude.fr/">JS Attitude</a></p>
-          <p class="link"><a href="http://delicious-insights.com/techdays-node">http://delicious-insights.com/techdays-node</a></p>
+          <p class="link"><a href="http://delicious-insights.com/mixit-node">http://delicious-insights.com/mixit-node</a></p>
           <p class="link"><a href="http://tdd.github.io/node-demo/">http://tdd.github.io/node-demo/</a></p>
         </section>
       </div>
