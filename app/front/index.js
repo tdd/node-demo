@@ -23,41 +23,35 @@ var OAUTH_CALLBACK_PATH = '/ohai';
 // any further middleware once a route is registered, this behaves in two
 // modes: middleware (non-route) and route (non-middleware).  Calling it
 // without a mode (or with an invalid mode) does everything.
-function frontOfficeApp(app, mode, server) {
-  // Middleware-only or generic context
-  if ('routes' !== mode) {
-    bindWebSockets(server);
+function frontOfficeApp(app, server) {
+  bindWebSockets(server);
 
-    // Subapp-local view path
-    app.use('/front', function useLocalViews(req, res, next) {
-      app.set('views', path.join(__dirname, 'views'));
-      next();
-    });
-  }
+  // Subapp-local view path
+  app.use('/front', function useLocalViews(req, res, next) {
+    app.set('views', path.join(__dirname, 'views'));
+    next();
+  });
 
-  // Routes-only or generic context
-  if ('middleware' !== mode) {
-    // Root access should redirect to the frontoffice subapp
-    app.all('/', function(req, res) {
-      res.redirect(301, '/front');
-    });
+  // Root access should redirect to the frontoffice subapp
+  app.all('/', function(req, res) {
+    res.redirect(301, '/front');
+  });
 
-    // Namespaced quiz running routes
-    app.namespace('/front', function() {
-      app.get('/', mainPage);
+  // Namespaced quiz running routes
+  app.namespace('/front', function() {
+    app.get('/', mainPage);
 
-      // Subapp authentication (using a previously registered Twitter strategy,
-      // see the bottom of this file)
-      app.get('/auth', passport.authenticate('twitter'));
+    // Subapp authentication (using a previously registered Twitter strategy,
+    // see the bottom of this file)
+    app.get('/auth', passport.authenticate('twitter'));
 
-      // OAuth callback for the Twitter strategy
-      app.get(OAUTH_CALLBACK_PATH, passport.authenticate('twitter', {
-        successRedirect: '/front',
-        failureFlash: true,
-        failureRedirect: '/front'
-      }));
-    });
-  }
+    // OAuth callback for the Twitter strategy
+    app.get(OAUTH_CALLBACK_PATH, passport.authenticate('twitter', {
+      successRedirect: '/front',
+      failureFlash: true,
+      failureRedirect: '/front'
+    }));
+  });
 }
 
 // Action: main page (initial rendering)

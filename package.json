@@ -1,12 +1,21 @@
 {
   "name": "node-demo",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "A wide-range demo of Node.js capabilities for Node conference sessions",
+  "engines": {
+    "node": "~0.10.20"
+  },
   "private": true,
   "dependencies": {
     "async": "~0.2.9",
     "colors": "~0.6.2",
-    "express": "~3.4.0",
+    "express": "~4.0.0",
+    "morgan": "~1.0.0",
+    "body-parser": "~1.0.0",
+    "cookie-session": "~1.0.0",
+    "method-override": "~1.0.0",
+    "errorhandler": "~1.0.0",
+    "connect-flash": "~0.1.1",
     "jade": "~0.35.0",
     "marked-man": "0.0.2",
     "mkdirp": "~0.3.5",
@@ -22,7 +31,6 @@
     "hiredis": "~0.1.15",
     "express-namespace": "~0.1.1",
     "sequelize": "~2.0.0-beta.0",
-    "connect-flash": "~0.1.1",
     "moment": "~2.2.1",
     "promise": "~3.2.0",
     "johnny-five": "~0.7.3",

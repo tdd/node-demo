@@ -22,65 +22,59 @@ module.exports = backOfficeApp;
 // any further middleware once a route is registered, this behaves in two
 // modes: middleware (non-route) and route (non-middleware).  Calling it
 // without a mode (or with an invalid mode) does everything.
-function backOfficeApp(app, mode) {
-  // Middleware-only or generic context
-  if ('routes' !== mode) {
-    app.use('/admin', checkboxNormalizer);
+function backOfficeApp(app) {
+  app.use('/admin', checkboxNormalizer);
 
-    // Subapp authentication (using a previously registered HTTP Basic strategy,
-    // see the bottom of this file)
-    app.use('/admin', passport.authenticate('basic', { session: false }));
+  // Subapp authentication (using a previously registered HTTP Basic strategy,
+  // see the bottom of this file)
+  app.use('/admin', passport.authenticate('basic', { session: false }));
 
-    // Subapp-local view path
-    app.use('/admin', function useLocalViews(req, res, next) {
-      app.set('views', path.join(__dirname, 'views'));
-      app.locals.localIP = localIP;
-      next();
+  // Subapp-local view path
+  app.use('/admin', function useLocalViews(req, res, next) {
+    app.set('views', path.join(__dirname, 'views'));
+    app.locals.localIP = localIP;
+    next();
+  });
+
+  // Subapp model checking, so we have `req.quiz` whenever relevant.
+  app.use('/admin/quizzes', function checkQuizModel(req, res, next) {
+    var quizId = (req.url.match(/^\/(\d+)\b/) || [])[1];
+    if (undefined === quizId)
+      return next();
+
+    Quiz.find(quizId).success(function(quiz) {
+      if (quiz) {
+        req.quiz = quiz;
+        next();
+      } else {
+        req.flash('error', 'Ce quiz est introuvable.');
+        res.redirect('/admin/quizzes');
+      }
     });
+  });
 
-    // Subapp model checking, so we have `req.quiz` whenever relevant.
-    app.use('/admin/quizzes', function checkQuizModel(req, res, next) {
-      var quizId = (req.url.match(/^\/(\d+)\b/) || [])[1];
-      if (undefined === quizId)
-        return next();
+  // Root access should redirect to the backoffice main page
+  app.all('/admin', function(req, res) {
+    res.redirect(301, '/admin/quizzes');
+  });
 
-      Quiz.find(quizId).success(function(quiz) {
-        if (quiz) {
-          req.quiz = quiz;
-          next();
-        } else {
-          req.flash('error', 'Ce quiz est introuvable.');
-          res.redirect('/admin/quizzes');
-        }
-      });
-    });
-    require('./questions')(app, 'middleware');
-  }
+  // Namespaced routes (REST resource routes)
+  app.namespace('/admin/quizzes', function() {
+    app.get( '/',             listQuizzes);
+    app.get( '/new',          newQuiz);
+    app.post('/',             createQuiz);
+    app.get( '/:id/edit',     editQuiz);
+    app.put( '/:id',          updateQuiz);
+    app.put( '/:id/reorder',  reorderQuiz);
+    app.put( '/:id/init',     initQuiz);
+    app.put( '/:id/start',    startQuiz);
+    app.put( '/:id/next',     nextQuestion);
+    app.del( '/:id',          deleteQuiz);
+    app.get( '/scoreboard',   scoreboard);
 
-  // Routes-only or generic context
-  if ('middleware' !== mode) {
-    // Root access should redirect to the backoffice main page
-    app.all('/admin', function(req, res) {
-      res.redirect(301, '/admin/quizzes');
-    });
+  });
 
-    // Namespaced routes (REST resource routes)
-    app.namespace('/admin/quizzes', function() {
-      app.get( '/',             listQuizzes);
-      app.get( '/new',          newQuiz);
-      app.post('/',             createQuiz);
-      app.get( '/:id/edit',     editQuiz);
-      app.put( '/:id',          updateQuiz);
-      app.put( '/:id/reorder',  reorderQuiz);
-      app.put( '/:id/init',     initQuiz);
-      app.put( '/:id/start',    startQuiz);
-      app.put( '/:id/next',     nextQuestion);
-      app.del( '/:id',          deleteQuiz);
-      app.get( '/scoreboard',   scoreboard);
-
-      require('./questions')(app, 'routes');
-    });
-  }
+  require('./questions')(app);
 }
 
 // Quiz resource actions

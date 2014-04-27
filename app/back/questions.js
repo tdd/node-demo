@@ -14,39 +14,32 @@ module.exports = questionsApp;
 // any further middleware once a route is registered, this behaves in two
 // modes: middleware (non-route) and route (non-middleware).  Calling it
 // without a mode (or with an invalid mode) does everything.
-function questionsApp(app, mode) {
-  // Middleware-only or generic context
-  if ('routes' !== mode) {
+function questionsApp(app) {
+  // Subapp model checking, so we have `req.question` whenever relevant.
+  app.use('/admin/quizzes', function checkQuestionModel(req, res, next) {
+    var questionId = (req.url.match(/\/questions\/(\d+)\b/) || [])[1];
+    if (undefined === questionId)
+      return next();
 
-    // Subapp model checking, so we have `req.question` whenever relevant.
-    app.use('/admin/quizzes', function checkQuestionModel(req, res, next) {
-      var questionId = (req.url.match(/\/questions\/(\d+)\b/) || [])[1];
-      if (undefined === questionId)
-        return next();
-
-      req.quiz.getQuestions({ where: { 'questions.id': questionId }, include: [Answer], order: 'answers.position' }).success(function(qs) {
-        if (qs.length) {
-          req.question = qs[0];
-          next();
-        } else {
-          req.flash('error', 'Cette question est introuvable.');
-          res.redirect('/admin/quizzes/' + req.quiz.id + '/edit');
-        }
-      });
+    req.quiz.getQuestions({ where: { 'questions.id': questionId }, include: [Answer], order: 'answers.position' }).success(function(qs) {
+      if (qs.length) {
+        req.question = qs[0];
+        next();
+      } else {
+        req.flash('error', 'Cette question est introuvable.');
+        res.redirect('/admin/quizzes/' + req.quiz.id + '/edit');
+      }
     });
-  }
+  });
 
-  // Route-only or generic context
-  if ('middleware' !== mode) {
-    // Namespaced routes (REST resource routes, basically)
-    app.namespace('/:quiz_id/questions', function() {
-      app.get( '/new',      newQuestion);
-      app.post('/',         createQuestion);
-      app.get( '/:id/edit', editQuestion);
-      app.put( '/:id',      updateQuestion);
-      app.del( '/:id',      deleteQuestion);
-    });
-  }
+  // Namespaced routes (REST resource routes, basically)
+  app.namespace('/:quiz_id/questions', function() {
+    app.get( '/new',      newQuestion);
+    app.post('/',         createQuestion);
+    app.get( '/:id/edit', editQuestion);
+    app.put( '/:id',      updateQuestion);
+    app.del( '/:id',      deleteQuestion);
+  });
 }
 
 // Quiz resource actions
