@@ -5,6 +5,8 @@ include ../../mixins
 h1
   +icon('question-sign')
   &nbsp;
+  | #{questionIndex}/#{questionCount}
+  &nbsp;
   != marked(question.title)
 
 if multipleAnswers

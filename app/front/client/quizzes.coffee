@@ -32,11 +32,11 @@ socket.on 'quiz-join', (user) ->
     $(document).trigger 'tooltips:refresh', $('#players [data-toggle="tooltip"]').last()
 
 # Question starts: update UI and start countdown
-socket.on 'question-start', (question, expiresAt) ->
+socket.on 'question-start', (question, expiresAt, index, count) ->
   question.expiresAt = expiresAt
   question.remainingTime = toolkit.remainingTime
   answersAcceptable = true
-  renderCoreView 'question', false, question: question
+  renderCoreView 'question', false, question: question, questionIndex: index, questionCount: count
 
   chrono = ->
     clearInterval itv if question.expiresAt <= Date.now()

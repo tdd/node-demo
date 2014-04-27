@@ -34,6 +34,8 @@ var Engine = _.extend(new events.EventEmitter(), {
   currentQuestion: null,
   currentQuestionExpiresAt: 0,
   currentQuestionTimer: null,
+  questionCount: 0,
+  questionIndex: 0,
   playerCount: 'Aucun joueur',
   startedAt: 0,
 
@@ -342,6 +344,7 @@ var Engine = _.extend(new events.EventEmitter(), {
       if (question) {
         // There IS a next question matching our criteria?  Awesome, adjust state, persist
         // in Redis and get on with it!
+        ++self.questionIndex;
         self.currentQuestion = question;
         self.currentQuestionExpiresAt = Date.now() + question.duration * 1000;
         self.currentQuestion.expiresAt = self.currentQuestionExpiresAt;
@@ -352,7 +355,8 @@ var Engine = _.extend(new events.EventEmitter(), {
           remaining: question.duration * 1000
         });
         log('info', 'Question starts: ' + question.title + ' (' + question.duration + 's)');
-        self.emit('question-start', question, self.currentQuestionExpiresAt);
+        self.emit('question-start', question, self.currentQuestionExpiresAt,
+          self.questionIndex, self.questionCount);
       } else {
         // There ISN'T any question left for our criteria: the quiz is done, wrap it up.
         self.wrapUp();
@@ -399,7 +403,7 @@ var Engine = _.extend(new events.EventEmitter(), {
     clearTimeout(this.currentQuestionTimer);
     delete this.questionIds;
     this.currentQuestion = this.currentQuestionTimer = null;
-    this.currentQuestionExpiresAt = 0;
+    this.currentQuestionExpiresAt = this.currentQuestionIndex = this.questionCount = 0;
 
     return this;
   },
@@ -413,21 +417,25 @@ var Engine = _.extend(new events.EventEmitter(), {
   start: function start() {
     this.startedAt = Date.now();
     this.reset('question');
+    this.questionIndex = 0;
+    var self = this;
 
     if ('random' !== this.currentQuiz.runningMode) {
       log('info', 'Quiz starts (sequential)');
-      return this.nextQuestion();
+      return this.currentQuiz.getQuestionCount().then(function(qCount) {
+        self.questionCount = qCount;
+      }).then(this.nextQuestion);
+    } else {
+      // Notice the two chained `.then` calls, that let us sequence asynchronous
+      // functions the way we need them.  For Sequelize calls, `.then` calls are triggered
+      // on success cases.
+      return this.currentQuiz.getQuestions({ where: { visible: true } }).then(function(qs) {
+        // Gotta love Underscore…
+        self.questionIds = _.chain(qs).pluck('id').shuffle().value();
+        self.questionCount = qs.length;
+        log('info', 'Quiz starts (randomized to ' + self.questionIds.join() + ')');
+      }).then(this.nextQuestion);
     }
-
-    var self = this;
-    // Notice the two chained `.then` calls, that let us sequence asynchronous
-    // functions the way we need them.  For Sequelize calls, `.then` calls are triggered
-    // on success cases.
-    return this.currentQuiz.getQuestions({ where: { visible: true } }).then(function(qs) {
-      // Gotta love Underscore…
-      self.questionIds = _.chain(qs).pluck('id').shuffle().value();
-      log('info', 'Quiz starts (randomized to ' + self.questionIds.join() + ')');
-    }).then(self.nextQuestion);
   },
 
   // A convenience method called when a question ends, to increment the scores of every
