@@ -8,6 +8,11 @@ block content
       +icon('plus')
       &nbsp;
       | Créer un quiz
+    &nbsp;
+    a.btn.btn-lg.btn-default(href="/admin/quizzes/reset-users")
+      +icon('trash')
+      &nbsp;
+      | Purger la liste des joueurs
 
   if quizzes.length
     table.table.table-striped

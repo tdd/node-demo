@@ -97,6 +97,14 @@ var Engine = _.extend(new events.EventEmitter(), {
     }
   },
 
+  resetUsers: function resetUsers(cb) {
+    async.map(
+      [AUTH_PERSIST_KEY, CUR_QUESTION_KEY, PLAYERS_KEY, SCOREBOARD_KEY, USER_LIST_KEY],
+      redis.del.bind(redis),
+      cb
+    );
+  },
+
   // Scoreboard computation on quiz end
   // ----------------------------------
 

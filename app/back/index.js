@@ -71,6 +71,7 @@ function backOfficeApp(app) {
     app.put( '/:id/next',     nextQuestion);
     app.del( '/:id',          deleteQuiz);
     app.get( '/scoreboard',   scoreboard);
+    app.get( '/reset-users',  resetUsers);
 
   });
 
@@ -179,6 +180,13 @@ function reorderQuiz(req, res) {
     res.send(204, 'Order persisted.');
   }).error(function(errors) {
     res.json(500, errors);
+  });
+}
+
+function resetUsers(req, res) {
+  engine.resetUsers(function() {
+    req.flash('info', 'La liste des joueurs a bien été purgée.');
+    res.redirect(302, '/admin/quizzes');
   });
 }
 

@@ -36,7 +36,7 @@ app.use(express.static(publicPath));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(methodOverride());
-app.use(cookieSession({ key: 'wazaaa:session', secret: "Node.js c’est de la balle !" }));
+app.use(cookieSession({ key: 'node-demo:session', secret: "Node.js c’est de la balle !" }));
 // This is not Adobe's Flash!  This is session flashes--messages that are
 // only retained until the next view rendered for the session.
 app.use(flash());
