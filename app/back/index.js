@@ -90,7 +90,12 @@ function createQuiz(req, res) {
     })
     .error(function() {
       quiz.errors = _.extend.apply(_, arguments);
-      res.render('new', { quiz: quiz, title: 'Nouveau quiz', breadcrumbs: buildBreadcrumbs() });
+      res.render('new', {
+        Quiz: Quiz,
+        quiz: quiz,
+        title: 'Nouveau quiz',
+        breadcrumbs: buildBreadcrumbs()
+      });
     });
 }
 
@@ -106,6 +111,7 @@ function deleteQuiz(req, res) {
 function editQuiz(req, res) {
   req.quiz.getQuestions({ order: 'position' }).success(function(questions) {
     res.render('edit', {
+      Quiz: Quiz,
       quiz: req.quiz,
       questions: questions,
       title: req.quiz.title,
@@ -129,7 +135,7 @@ function listQuizzes(req, res) {
       'SELECT quizId AS id, COUNT(id) AS questions FROM questions GROUP BY 1',
       null, { raw: true }
     ).success(function(rows) {
-      counters = _.inject(rows, function(acc, row) {
+      var counters = _.inject(rows, function(acc, row) {
         acc[row.id] = row.questions;
         return acc;
       }, {});
@@ -149,7 +155,11 @@ function nextQuestion(req, res) {
 // Action: new quiz
 function newQuiz(req, res) {
   var quiz = Quiz.build();
-  res.render('new', { quiz: quiz, title: 'Nouveau quiz', breadcrumbs: buildBreadcrumbs() });
+  res.render('new', {
+    Quiz: Quiz,
+    quiz: quiz,
+    title: 'Nouveau quiz', breadcrumbs: buildBreadcrumbs()
+  });
 }
 
 // Action: reorder quiz
@@ -210,6 +220,7 @@ function updateQuiz(req, res) {
   .error(function() {
     quiz.errors = _.extend.apply(_, arguments);
     res.render('edit', {
+      Quiz: Quiz,
       quiz: quiz,
       title: quiz.title,
       breadcrumbs: buildBreadcrumbs(quiz)
