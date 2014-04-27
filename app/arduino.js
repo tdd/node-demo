@@ -29,7 +29,7 @@ board.on('ready', function() {
     pins: [5,  6,  7,  8,  9,  10]
   });
   lcd.on('ready', function() {
-    lcd.clear().print('Welcome techdays');
+    lcd.clear().print('Welcome Mix-IT');
   });
 
   green  = new five.Led({ pin: 11 }).off();
