@@ -26,6 +26,7 @@ var publicPath = path.join(__dirname, '..', 'public');
 app.set('port', process.env.PORT || 3000);
 app.set('view engine', 'jade');
 app.use(express.logger(app.get('env') === 'development' ? 'dev' : 'default'));
+// FIXME: https://speakerdeck.com/ckarande/top-overlooked-security-threats-to-node-dot-js-web-applications
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
