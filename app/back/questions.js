@@ -33,7 +33,7 @@ function questionsApp(app) {
   });
 
   // Namespaced routes (REST resource routes, basically)
-  app.namespace('/:quiz_id/questions', function() {
+  app.namespace('/admin/quizzes/:quiz_id/questions', function() {
     app.get( '/new',      newQuestion);
     app.post('/',         createQuestion);
     app.get( '/:id/edit', editQuestion);
@@ -67,6 +67,7 @@ function createQuestion(req, res) {
         answers: buildAnswers(req.body.answers),
         quiz: req.quiz,
         question: question,
+        Question: Question,
         title: 'Nouvelle question',
         breadcrumbs: buildBreadcrumbs(req.quiz)
       });
@@ -86,6 +87,7 @@ function editQuestion(req, res) {
   res.render('questions/edit', {
     quiz: req.quiz,
     question: req.question,
+    Question: Question,
     answers: buildAnswers(req.question.answers),
     title: req.question.title,
     breadcrumbs: buildBreadcrumbs(req.quiz, req.question)
@@ -99,6 +101,7 @@ function newQuestion(req, res) {
     answers: buildAnswers([]),
     quiz: req.quiz,
     question: question,
+    Question: Question,
     title: 'Nouvelle question',
     breadcrumbs: buildBreadcrumbs(req.quiz)
   });
@@ -123,6 +126,7 @@ function updateQuestion(req, res) {
         answers: buildAnswers(req.body.answers),
         quiz: req.quiz,
         question: question,
+        Question: Question,
         title: question.title,
         breadcrumbs: buildBreadcrumbs(req.quiz, question)
       });
