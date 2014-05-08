@@ -8,6 +8,7 @@
 
 var bodyParser     = require('body-parser');
 var cookieSession  = require('cookie-session');
+var csurf          = require('csurf');
 var express        = require('express');
 var flash          = require('connect-flash');
 var http           = require('http');
@@ -36,6 +37,7 @@ app.use(express.static(publicPath));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(methodOverride());
+app.use(csurf());
 app.use(cookieSession({ key: 'node-demo:session', secret: "Node.js c’est de la balle !" }));
 // This is not Adobe's Flash!  This is session flashes--messages that are
 // only retained until the next view rendered for the session.

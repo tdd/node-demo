@@ -34,7 +34,8 @@
     "moment": "~2.2.1",
     "promise": "~3.2.0",
     "johnny-five": "~0.7.3",
-    "marked": "~0.3.0"
+    "marked": "~0.3.0",
+    "csurf": "^1.0.0"
   },
   "devDependencies": {
     "coffee-script": "~1.6.3",
@@ -52,8 +53,8 @@
     "start": "nodemon app/app.js",
     "debug": "nodemon --debug app/app.js",
     "front": "brunch build",
-    "doc":   "groc",
-    "test":  "mocha"
+    "doc": "groc",
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
