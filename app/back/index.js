@@ -136,7 +136,7 @@ function listQuizzes(req, res) {
       'SELECT quizId AS id, COUNT(id) AS questions FROM questions GROUP BY 1',
       null, { raw: true }
     ).success(function(rows) {
-      var counters = _.inject(rows, function(acc, row) {
+      var counters = _.inject(_.flatten(rows), function(acc, row) {
         acc[row.id] = row.questions;
         return acc;
       }, {});

@@ -327,7 +327,7 @@ var Engine = _.extend(new events.EventEmitter(), {
 
     // Next-question selector logic.  We build up selecting options for the ORM.
 
-    var opts = { where: { visible: true }, order: 'questions.position, answers.position',
+    var opts = { where: { visible: true }, order: 'question.position, answers.position',
       limit: 1, include: [Answer] };
 
     // If we run on a randomized quiz, starting it picked a random, one-time ordering
