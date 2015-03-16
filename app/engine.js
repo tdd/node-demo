@@ -16,7 +16,6 @@ var Promise   = require('promise');
 // Persistence keys in the Redis store
 // -----------------------------------
 
-var AUTH_PERSIST_KEY  = 'node-demo:ips-to-users';
 var CUR_QUESTION_KEY  = 'node-demo:current-question';
 var PLAYERS_KEY       = 'node-demo:players';
 var SCOREBOARD_KEY    = 'node-demo:score-board';
@@ -49,57 +48,42 @@ var Engine = _.extend(new events.EventEmitter(), {
   // dev, when the server auto-restarts at every code change.
   checkAuth: function(req, res, next) {
     var user = req.user;
+
+    if (!user) {
+      res.redirect(302, '/front/auth');
+      return;
+    }
+
     var self = this;
 
-    if (user) {
-      handleUser(user);
-    } else {
-      redis.hget(AUTH_PERSIST_KEY, req.ip, handleRedisUser);
-    }
-
-    function handleUser(user) {
-      var json = JSON.stringify(user), origScore;
-      // Notice the use of [`async.waterfall`](https://github.com/caolan/async#waterfall)
-      // here.  We make heavy use of that trick to chain multiple traditional (non-promise)
-      // async call whose results feed into each other (at least for some of the calls).
-      // This is one way of avoiding the “Pyramid of Doom” effect.
-      async.waterfall([
-        // 1: persist the current user in the IP-to-player map
-        function(cb)        { redis.hset(AUTH_PERSIST_KEY, req.ip, json, cb); },
-        // 3. persist the current user in the players-scored-by-join-time sorted set.
-        // Use their existing score, if any, to avoid bumping them to the end of the
-        // list once they've joined in.
-        function(foo, cb)   { redis.zscore(USER_LIST_KEY, json, cb); },
-        function(score, cb) { redis.zadd(USER_LIST_KEY, (origScore = score) || Date.now(), json, cb); },
-        // 4. Check the amount of players to maintain our `playerCount` textual state.
-        function(foo, cb)   { redis.zcard(USER_LIST_KEY, cb); },
-        function(count, cb) {
-          self.playerCount = count <= 0 ? 'Aucun joueur' : (1 === count ? 'Un joueur' : count + ' joueurs');
-          if (self.currentQuiz && !self.isRunning() && !origScore)
-            self.emit('quiz-join', user, self.playerCount);
-          cb();
-        },
-        // This is a middleware: don't forget to pass on control to the
-        // remainder of the stack once we're done.
-        next
-      ]);
-    }
-
-    // Tiny callback when our user wasn't found in the session and we looked
-    // them up in the Redis store.
-    function handleRedisUser(err, json) {
-      if (!json)
-        res.redirect(302, '/front/auth');
-      else {
-        req.user = JSON.parse(json);
-        handleUser(req.user);
-      }
-    }
+    var json = JSON.stringify(user), origScore;
+    // Notice the use of [`async.waterfall`](https://github.com/caolan/async#waterfall)
+    // here.  We make heavy use of that trick to chain multiple traditional (non-promise)
+    // async call whose results feed into each other (at least for some of the calls).
+    // This is one way of avoiding the “Pyramid of Doom” effect.
+    async.waterfall([
+      // 1. persist the current user in the players-scored-by-join-time sorted set.
+      // Use their existing score, if any, to avoid bumping them to the end of the
+      // list once they've joined in.
+      function(cb)   { redis.zscore(USER_LIST_KEY, json, cb); },
+      function(score, cb) { redis.zadd(USER_LIST_KEY, (origScore = score) || Date.now(), json, cb); },
+      // 2. Check the amount of players to maintain our `playerCount` textual state.
+      function(foo, cb)   { redis.zcard(USER_LIST_KEY, cb); },
+      function(count, cb) {
+        self.playerCount = count <= 0 ? 'Aucun joueur' : (1 === count ? 'Un joueur' : count + ' joueurs');
+        if (self.currentQuiz && !self.isRunning() && !origScore)
+          self.emit('quiz-join', user, self.playerCount);
+        cb();
+      },
+      // This is a middleware: don't forget to pass on control to the
+      // remainder of the stack once we're done.
+      next
+    ]);
   },
 
   resetUsers: function resetUsers(cb) {
     async.map(
-      [AUTH_PERSIST_KEY, CUR_QUESTION_KEY, PLAYERS_KEY, SCOREBOARD_KEY, USER_LIST_KEY],
+      [CUR_QUESTION_KEY, PLAYERS_KEY, SCOREBOARD_KEY, USER_LIST_KEY],
       redis.del.bind(redis),
       cb
     );
