@@ -37,8 +37,8 @@ app.use(express.static(publicPath));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(methodOverride());
-app.use(csurf());
 app.use(cookieSession({ key: 'node-demo:session', secret: "Node.js c’est de la balle !" }));
+app.use(csurf());
 // This is not Adobe's Flash!  This is session flashes--messages that are
 // only retained until the next view rendered for the session.
 app.use(flash());
@@ -48,8 +48,9 @@ app.use(passport.session());
 
 // Make the session flash and params readable by all views
 app.use(function(req, res, next) {
-  app.locals.flash = req.flash();
-  app.locals.query = req.query;
+  res.locals.flash = req.flash();
+  res.locals.query = req.query;
+  res.locals.csrfToken = req.csrfToken();
   next();
 });
 
