@@ -75,7 +75,6 @@ function mainPage(req, res) {
 // between WS traffic and the engine (both ways).
 function bindWebSockets(server) {
   var sio = io.listen(server);
-  sio.set('log level', 2);
 
   // Convenience forwarder when the WS "event" is exactly the same
   // as the engine-emitted event.
